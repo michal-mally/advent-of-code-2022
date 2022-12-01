@@ -8,8 +8,7 @@ fun main() {
         .map { it.toIntOrNull() }
         .splitByNull()
         .map { it.sum() }
-        .sortedDescending()
-        .take(3)
+        .fold(emptyList<Int>()) { acc, i -> (acc + i).sortedDescending().take(3) }
         .sum()
         .let(::println)
 }

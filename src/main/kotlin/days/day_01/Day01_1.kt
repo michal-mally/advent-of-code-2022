@@ -1,15 +1,13 @@
 package days.day_01
 
-import util.file.text
+import util.file.lines
+import util.sequence.splitByNull
 
 fun main() {
-    text(1)
-        .split("\n\n")
-        .maxOfOrNull(String::elfCalories)
+    lines(1)
+        .map { it.toIntOrNull() }
+        .splitByNull()
+        .map { it.sum() }
+        .maxOrNull()
         .let(::println)
 }
-
-fun String.elfCalories() =
-    split("\n")
-        .mapNotNull(String::toIntOrNull)
-        .sum()
