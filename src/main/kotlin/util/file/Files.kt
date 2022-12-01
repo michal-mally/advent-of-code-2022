@@ -1,8 +1,5 @@
 package util.file
 
-fun text(day: Int) =
-    reader(day).readText()
-
 fun lines(day: Int) =
     reader(day).lineSequence()
 
