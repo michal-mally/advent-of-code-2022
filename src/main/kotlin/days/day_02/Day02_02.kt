@@ -12,9 +12,9 @@ fun main() {
         .map { it[0] to it[1] }
         .map { it.mapBoth { value -> value[0].code } }
         .map { (it.first - 'A'.code) to (it.second - 'X'.code) }
-        .map { it.mapRight { l, r -> (l + r + 2) % 3 } }
+        .map { it.mapRight { l, r -> l + r + 2 } }
         .map { it.mapLeft { l, r -> r - l + 4 } }
-        .map { it.mapLeft { l, _ -> l % 3 } }
+        .map { it.mapBoth { v -> v % 3 } }
         .map { it.first * 3 to it.second + 1 }
         .flatMap { it.toSequence() }
         .sum()
