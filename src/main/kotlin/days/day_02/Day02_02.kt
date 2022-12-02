@@ -6,8 +6,8 @@ import util.pair.*
 fun main() {
     lines(2)
         .map { it.split(" ") }
+        .map { it.map { value -> value[0].code } }
         .map { it.toPair() }
-        .map { it.mapLeftAndRight { value -> value[0].code } }
         .map { (it.first - 'A'.code) to (it.second - 'X'.code) }
         .map { it.mapRight { l, r -> l + r + 2 } }
         .map { it.mapLeft { l, r -> r - l + 4 } }
