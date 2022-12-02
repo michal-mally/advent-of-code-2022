@@ -3,6 +3,7 @@ package days.day_02
 import util.file.lines
 import util.pair.mapBoth
 import util.pair.mapLeft
+import util.pair.toSequence
 
 fun main() {
     lines(2)
@@ -13,7 +14,7 @@ fun main() {
         .map { it.mapLeft { l, r -> r - l + 4 } }
         .map { it.mapLeft { l, _ -> l % 3 } }
         .map { it.mapLeft { l, _ -> l * 3 } }
-        .map { it.first + it.second }
+        .flatMap { it.toSequence() }
         .sum()
         .let(::println)
 }

@@ -8,3 +8,6 @@ fun <A, B, C> Pair<A, B>.mapLeft(f: (A, B) -> C): Pair<C, B> =
 
 fun <A, B, C> Pair<A, B>.mapRight(f: (A, B) -> C): Pair<A, C> =
     first to f(first, second)
+
+fun <A> Pair<A, A>.toSequence(): Sequence<A> =
+    sequenceOf(first, second)
