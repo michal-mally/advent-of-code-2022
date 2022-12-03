@@ -1,5 +1,8 @@
 package util.pair
 
+fun <A, B, C, D> Pair<A, B>.map(f: (A, B) -> Pair<C, D>): Pair<C, D> =
+    f(first, second)
+
 fun <A, B> Pair<A, A>.mapLeftAndRight(f: (A) -> B): Pair<B, B> =
     f(first) to f(second)
 
