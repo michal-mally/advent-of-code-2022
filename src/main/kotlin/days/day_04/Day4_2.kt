@@ -8,7 +8,6 @@ import util.pair.toRange
 fun main() {
     lines(4)
         .map(::transformLine)
-        .map { it.mapLeftAndRight(IntRange::toSet) } // no need to create a set for each range
         .map { (first, second) -> first intersect second }
         .count(Set<Int>::isNotEmpty)
         .let(::println)
