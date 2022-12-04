@@ -5,15 +5,16 @@ import util.file.lines
 fun main() {
     lines(3)
         .chunked(3)
-        .map { group ->
-            group
-                .map(String::toSet)
-                .reduce(Set<Char>::intersect)
-                .single()
-        }
+        .map(::extractCharFromGroup)
         .map {
             it.code - if (it.isLowerCase()) 'a'.code - 1 else 'A'.code - 27
         }
         .sum()
         .let(::println)
 }
+
+private fun extractCharFromGroup(group: List<String>) =
+    group
+        .map(String::toSet)
+        .reduce(Set<Char>::intersect)
+        .single()
