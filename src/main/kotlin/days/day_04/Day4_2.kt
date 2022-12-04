@@ -20,8 +20,9 @@ private fun transformLine(line: String) =
         .toPair()
         .mapLeftAndRight(::transformToRange)
 
-private fun transformToRange(it: String) = it
-    .split("-")
-    .toPair()
-    .mapLeftAndRight(String::toInt)
-    .toRange()
+private fun transformToRange(range: String) =
+    range
+        .split("-")
+        .toPair()
+        .mapLeftAndRight(String::toInt)
+        .toRange()
