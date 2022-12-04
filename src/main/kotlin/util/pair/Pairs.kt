@@ -19,3 +19,7 @@ fun <A> Collection<A>.toPair(): Pair<A, A> {
     require(size == 2) { "Collection must have exactly 2 elements" }
     return first() to last()
 }
+
+fun Pair<Int, Int>.toRange(): IntRange =
+    first..second
+
