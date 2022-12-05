@@ -12,15 +12,19 @@ class Day05_1 : Solver<Sequence<String>, String> {
         input
             .splitBy("")
             .toPair()
-            .map { stacks, moves -> Stacks(stacks) to moves.map(::Move) }
-            .map { stacks, moves -> stacks.apply { performMoves(moves) } }
+            .map { stacks, moves -> Stacks(stacks) + moves.map(::Move) }
             .topElements()
             .joinToString("")
 
     private class Stacks(private val stacks: List<ArrayDeque<Char>>) {
 
-        fun performMoves(moves: Sequence<Move>) =
-            moves.forEach { move ->
+        operator fun plus(moves: Sequence<Move>) =
+            apply {
+                moves.forEach { move -> this + move }
+            }
+
+        operator fun plus(move: Move) =
+            apply {
                 List(move.amount) { stacks[move.from - 1].removeLast() }.forEach { stacks[move.to - 1].addLast(it) }
             }
 
