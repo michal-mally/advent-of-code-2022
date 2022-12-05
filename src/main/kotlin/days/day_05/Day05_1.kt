@@ -11,6 +11,7 @@ class Day05_1 : Solver<Sequence<String>, String> {
             .toList()
 
         val reversed = initialState
+            .toList()
             .reversed()
         val stackCount = reversed
             .first()
