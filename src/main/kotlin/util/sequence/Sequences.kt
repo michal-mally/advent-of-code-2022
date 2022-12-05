@@ -6,15 +6,18 @@ fun <T : Any> Sequence<T?>.splitByNull() =
 
 fun <T> Sequence<T>.splitBy(delimiter: T): Sequence<List<T>> =
     sequence {
-        val elements = mutableListOf<T>()
+        var elements = mutableListOf<T>()
         for (n in this@splitBy) {
             if (n == delimiter) {
                 if (elements.isNotEmpty()) {
                     yield(elements)
-                    elements.clear()
+                    elements = mutableListOf()
                 }
             } else {
                 elements += n
             }
+        }
+        if (elements.isNotEmpty()) {
+            yield(elements)
         }
     }
