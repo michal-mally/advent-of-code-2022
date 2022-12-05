@@ -1,26 +1,30 @@
 package days.day_01
 
-import util.file.lines
+import util.Solver
 import java.util.*
 
-fun main() {
-    var topElves = TreeSet<Int>()
+class Day01_2p : Solver<Sequence<String>, Int> {
 
-    var elfSum = 0
-    for (number in lines(1).map(String::toIntOrNull)) {
-        if (number != null) {
-            elfSum += number
-        } else {
-            topElves += elfSum
-            elfSum = 0
-            if (topElves.size > 3) {
-                topElves.removeFirst()
+    override fun solve(input: Sequence<String>): Int {
+        val topElves = TreeSet<Int>()
+
+        var elfSum = 0
+        for (number in input.map(String::toIntOrNull)) {
+            if (number != null) {
+                elfSum += number
+            } else {
+                topElves += elfSum
+                elfSum = 0
+                if (topElves.size > 3) {
+                    topElves.removeFirst()
+                }
             }
         }
+
+        return topElves.sum()
     }
 
-    println(topElves.sum())
-}
+    private fun <T> MutableCollection<T>.removeFirst() =
+        remove(first())
 
-fun <T> MutableCollection<T>.removeFirst() =
-    remove(first())
+}
