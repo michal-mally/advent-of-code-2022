@@ -62,7 +62,7 @@ class Day05_1 : Solver<Sequence<String>, String> {
             ?.groupValues
             ?.drop(1)
             ?.map(String::toInt)
-            ?.let { Move(it[0], it[1], it[2]) }
+            ?.let { (amount, from, to) -> Move(amount, from, to) }
             ?: throw IllegalArgumentException("Invalid move: $definition")
 
 }
