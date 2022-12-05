@@ -1,6 +1,6 @@
 package util.pair
 
-fun <A, B, C, D> Pair<A, B>.map(f: (A, B) -> Pair<C, D>): Pair<C, D> =
+fun <A, B, C> Pair<A, B>.map(f: (A, B) -> C): C =
     f(first, second)
 
 fun <A, B> Pair<A, A>.mapLeftAndRight(f: (A) -> B): Pair<B, B> =
