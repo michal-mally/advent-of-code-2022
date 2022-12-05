@@ -1,5 +1,6 @@
 package util.sequence
 
+import util.iterator.nextOrNull
 import util.pair.toPair
 
 @Suppress("UNCHECKED_CAST")
@@ -27,13 +28,12 @@ fun <T> Sequence<T>.splitBy(delimiter: T): Sequence<Sequence<T>> =
 fun <T> Sequence<Sequence<T>>.transpose(): Sequence<Sequence<T>> =
     sequence {
         val iterators = this@transpose
-            .map { it.iterator() }
+            .map(Sequence<T>::iterator)
             .toList()
 
-        while (iterators.any { it.hasNext() }) {
+        while (iterators.any(Iterator<T>::hasNext)) {
             iterators
-                .filter { it.hasNext() }
-                .map { it.next() }
+                .mapNotNull(Iterator<T>::nextOrNull)
                 .asSequence()
                 .let { yield(it) }
         }
