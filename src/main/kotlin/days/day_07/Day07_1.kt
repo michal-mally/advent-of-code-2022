@@ -34,7 +34,7 @@ class Day07_1 : Solver<Sequence<String>, Int> {
     }
 
     private class State(
-        val currentDirectory: ArrayDeque<String> = ArrayDeque(),
+        val currentDirectory: ArrayDeque<String> = ArrayDeque(listOf("/")),
         val directorySizes: MutableMap<String, Int> = mutableMapOf<String, Int>().withDefault { 0 },
     )
 
@@ -47,7 +47,11 @@ class Day07_1 : Solver<Sequence<String>, Int> {
             with(currentDirectory) {
                 when (path) {
                     ".." -> removeLast()
-                    "/" -> clear()
+                    "/" -> {
+                        clear()
+                        addLast("/")
+                    }
+
                     else -> addLast(path)
                 }
             }
@@ -62,13 +66,9 @@ class Day07_1 : Solver<Sequence<String>, Int> {
                 .sumOf(String::toInt)
 
             val path = ArrayDeque(currentDirectory)
-            while (true) {
+            while (path.isNotEmpty()) {
                 val joinedPath = path.joinToString("/")
                 directorySizes[joinedPath] = directorySizes.getValue(joinedPath) + fileSizes
-                if (path.isEmpty()) {
-                    return
-                }
-
                 path.removeLast()
             }
         }
