@@ -16,7 +16,6 @@ fun chars(day: Int) =
                     yield(char.toChar())
                 }
             }
-
     }
 
 private fun inputStream(day: Int) =
