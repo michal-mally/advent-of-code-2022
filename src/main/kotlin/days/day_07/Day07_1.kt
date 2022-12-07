@@ -1,6 +1,7 @@
 package days.day_07
 
 import util.Solver
+import util.list.allPrefixes
 import util.sequence.headAndTail
 import util.sequence.splitBy
 
@@ -47,11 +48,7 @@ class Day07_1 : Solver<Sequence<String>, Int> {
             with(currentDirectory) {
                 when (path) {
                     ".." -> removeLast()
-                    "/" -> {
-                        clear()
-                        addLast("/")
-                    }
-
+                    "/" -> clear()
                     else -> addLast(path)
                 }
             }
@@ -65,12 +62,10 @@ class Day07_1 : Solver<Sequence<String>, Int> {
                 .map { it.substringBefore(" ") }
                 .sumOf(String::toInt)
 
-            val path = ArrayDeque(currentDirectory)
-            while (path.isNotEmpty()) {
-                val joinedPath = path.joinToString("/")
-                directorySizes[joinedPath] = directorySizes.getValue(joinedPath) + fileSizes
-                path.removeLast()
-            }
+            currentDirectory
+                .allPrefixes()
+                .map { it.joinToString("/") }
+                .forEach { directorySizes[it] = directorySizes.getValue(it) + fileSizes }
         }
     }
 

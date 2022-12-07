@@ -1,6 +1,7 @@
 package days.day_07
 
 import util.Solver
+import util.list.allPrefixes
 import util.sequence.headAndTail
 import util.sequence.splitBy
 
@@ -12,7 +13,7 @@ class Day07_2 : Solver<Sequence<String>, Int> {
                 .splitBy(true) { it.startsWith("$") }
                 .map(::parseCommand)
                 .forEach { it.execute() }
-            val spaceToBeFreed = 30_000_000 - (70_000_000 - directorySizes.getValue("/"))
+            val spaceToBeFreed = 30_000_000 - (70_000_000 - directorySizes.getValue(""))
 
             directorySizes
                 .values
@@ -49,11 +50,7 @@ class Day07_2 : Solver<Sequence<String>, Int> {
             with(currentDirectory) {
                 when (path) {
                     ".." -> removeLast()
-                    "/" -> {
-                        clear()
-                        addLast("/")
-                    }
-
+                    "/" -> clear()
                     else -> addLast(path)
                 }
             }
@@ -67,12 +64,10 @@ class Day07_2 : Solver<Sequence<String>, Int> {
                 .map { it.substringBefore(" ") }
                 .sumOf(String::toInt)
 
-            val path = ArrayDeque(currentDirectory)
-            while (path.isNotEmpty()) {
-                val joinedPath = path.joinToString("/")
-                directorySizes[joinedPath] = directorySizes.getValue(joinedPath) + fileSizes
-                path.removeLast()
-            }
+            currentDirectory
+                .allPrefixes()
+                .map { it.joinToString("/") }
+                .forEach { directorySizes[it] = directorySizes.getValue(it) + fileSizes }
         }
     }
 
