@@ -4,7 +4,7 @@ import util.Solver
 import util.sequence.headAndTail
 import util.sequence.splitBy
 
-class Day07_1 : Solver<Sequence<String>, Int> {
+class Day07_2 : Solver<Sequence<String>, Int> {
 
     override fun solve(input: Sequence<String>) =
         with(State()) {
@@ -12,10 +12,12 @@ class Day07_1 : Solver<Sequence<String>, Int> {
                 .splitBy(true) { it.startsWith("$") }
                 .map(::parseCommand)
                 .forEach { it.execute() }
+            val spaceToBeFreed = 30_000_000 - (70_000_000 - directorySizes.getValue(""))
+
             directorySizes
                 .values
-                .filter { it <= 100_000 }
-                .sum()
+                .filter { it >= spaceToBeFreed }
+                .min()
         }
 
     private fun parseCommand(commandAndOutput: Sequence<String>): Command {
