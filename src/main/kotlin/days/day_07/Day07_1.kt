@@ -2,6 +2,7 @@ package days.day_07
 
 import util.Solver
 import util.list.allPrefixes
+import util.map.add
 import util.sequence.headAndTail
 import util.sequence.splitBy
 
@@ -65,7 +66,7 @@ class Day07_1 : Solver<Sequence<String>, Int> {
             currentDirectory
                 .allPrefixes()
                 .map { it.joinToString("/") }
-                .forEach { directorySizes[it] = directorySizes.getValue(it) + fileSizes }
+                .forEach { directorySizes.add(it, fileSizes) }
         }
     }
 
