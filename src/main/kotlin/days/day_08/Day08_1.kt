@@ -1,6 +1,7 @@
 package days.day_08
 
 import util.Solver
+import util.array.TwoDimArray
 
 class Day08_1 : Solver<Sequence<String>, Int> {
     override fun solve(input: Sequence<String>): Int {
@@ -37,16 +38,5 @@ class Day08_1 : Solver<Sequence<String>, Int> {
                 }
             }
         return visibleTrees.size
-    }
-
-    private class TwoDimArray<T>(private val values: List<List<T>>) {
-        init {
-            require(values.isNotEmpty())
-            require(values.all { it.size == values[0].size })
-        }
-
-        val rowIndices = values.indices
-        val columnIndices = values.first().indices
-        operator fun get(position: Pair<Int, Int>) = values[position.first][position.second]
     }
 }

@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.8.0-Beta"
+    kotlin("jvm") version "1.8.0-RC"
 }
 
 group = "me.mmally"
@@ -17,7 +17,10 @@ dependencies {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs += "-Xcontext-receivers"
+        freeCompilerArgs += listOf(
+            "-Xcontext-receivers",
+            "-Xopt-in=kotlin.ExperimentalStdlibApi",
+        )
     }
 }
 
