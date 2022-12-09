@@ -5,6 +5,7 @@ import util.array.TwoDimArray
 
 typealias Forest = TwoDimArray<Int>
 typealias Position = Pair<Int, Int>
+typealias Direction = Sequence<Position>
 
 class Day08_1 : Solver<Sequence<String>, Int> {
     override fun solve(input: Sequence<String>): Int {
@@ -25,7 +26,7 @@ class Day08_1 : Solver<Sequence<String>, Int> {
             .toList()
             .let(::Forest)
 
-    private fun Forest.visibleTreesInDirection(direction: List<Position>) =
+    private fun Forest.visibleTreesInDirection(direction: Direction) =
         buildSet {
             var tallestTree = -1
             for (position in direction) {
@@ -37,12 +38,12 @@ class Day08_1 : Solver<Sequence<String>, Int> {
             }
         }
 
-    private fun Forest.allDirections(): Sequence<List<Position>> =
+    private fun Forest.allDirections(): Sequence<Direction> =
         sequenceOf(
             rowIndices.map { row -> columnIndices.map { row to it } },
-            columnIndices.map { col -> rowIndices.map { it to col } },
+            columnIndices.map { column -> rowIndices.map { it to column } }
         )
-            .flatMap { directions -> sequenceOf(directions, directions.map { it.reversed() }) }
-            .flatten()
+            .reduce { acc, sequence -> acc + sequence }
+            .flatMap { sequenceOf(it, it.toList().reversed().asSequence()) }
 
 }

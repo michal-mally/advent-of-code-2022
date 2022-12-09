@@ -8,12 +8,12 @@ class TwoDimArray<T>(private val values: List<List<T>>) {
 
     val rowCount = values.size
     val columnCount = values.first().size
-    val rowIndices = values.indices
-    val columnIndices = values.first().indices
+    val rowIndices = values.indices.asSequence()
+    val columnIndices = values.first().indices.asSequence()
 
     operator fun get(position: Pair<Int, Int>) = values[position.first][position.second]
 
-    fun allPositions(): List<Pair<Int, Int>> =
+    fun allPositions(): Sequence<Pair<Int, Int>> =
         rowIndices.flatMap { row -> columnIndices.map { row to it } }
 
 }
