@@ -11,7 +11,7 @@ class Day08Spec : FreeSpec({
     }
 
     "Part 2" {
-        Day08_2().solve(lines(8)) shouldBe 1717
+        Day08_2().solve(lines(8)) shouldBe 321975
     }
 
 })
