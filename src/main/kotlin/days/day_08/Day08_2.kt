@@ -1,11 +1,11 @@
 package days.day_08
 
 import util.Solver
-import util.array.TwoDimArray
 
 class Day08_2 : Solver<Sequence<String>, Int> {
     override fun solve(input: Sequence<String>): Int {
         val forest = forest(input)
+
         return forest
             .allPositions()
             .filter { it.row in (1..<forest.rowCount - 1) && it.column in (1..<forest.columnCount - 1) }
@@ -17,12 +17,12 @@ class Day08_2 : Solver<Sequence<String>, Int> {
             .map { it.toList() }
             .map { it.map { c -> c.toString().toInt() } }
             .toList()
-            .let(::TwoDimArray)
+            .let(::Forest)
 
-    private fun TwoDimArray<Int>.scenicViewOf(position: Pair<Int, Int>): Int {
-        val treeHeight = this@TwoDimArray[position]
+    private fun Forest.scenicViewOf(position: Position): Int {
+        val treeHeight = this@Forest[position]
         return allDirections(position)
-            .map { direction -> direction.map { this@TwoDimArray[it] } }
+            .map { direction -> direction.map { this@Forest[it] } }
             .map { visibleTreesInDirection(treeHeight, it) }
             .reduce(Int::times)
     }
@@ -39,7 +39,7 @@ class Day08_2 : Solver<Sequence<String>, Int> {
         return visibleTrees
     }
 
-    private fun TwoDimArray<Int>.allDirections(position: Pair<Int, Int>) =
+    private fun Forest.allDirections(position: Position) =
         sequenceOf(
             (position.column - 1 downTo 0).asSequence().map { position.row to it },
             (position.column + 1..<columnCount).asSequence().map { position.row to it },

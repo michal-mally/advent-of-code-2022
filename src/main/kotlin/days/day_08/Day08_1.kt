@@ -3,37 +3,41 @@ package days.day_08
 import util.Solver
 import util.array.TwoDimArray
 
+typealias Forest = TwoDimArray<Int>
+typealias Position = Pair<Int, Int>
+
 class Day08_1 : Solver<Sequence<String>, Int> {
     override fun solve(input: Sequence<String>): Int {
-        val forest = input
-            .map { it.toList() }
+        val forest = forest(input)
+
+        return forest
+            .allDirections()
+            .fold(emptySet<Position>()) { visibleTrees, direction ->
+                visibleTrees + forest.visibleTreesInDirection(direction)
+            }
+            .size
+    }
+
+    private fun forest(input: Sequence<String>) =
+        input
+            .map(String::toList)
             .map { it.map { c -> c.toString().toInt() } }
             .toList()
-            .let(::TwoDimArray)
+            .let(::Forest)
 
-        val visibleTrees = mutableSetOf<Pair<Int, Int>>()
-        for (direction in forest.allDirections()) {
-            forest.visibleTreesInDirection(direction, visibleTrees)
-        }
-
-        return visibleTrees.size
-    }
-
-    private fun TwoDimArray<Int>.visibleTreesInDirection(
-        direction: List<Pair<Int, Int>>,
-        visibleTrees: MutableSet<Pair<Int, Int>>,
-    ) {
-        var tallestTree = -1
-        for (position in direction) {
-            val tree = this@TwoDimArray[position]
-            if (tree > tallestTree) {
-                tallestTree = tree
-                visibleTrees += position
+    private fun Forest.visibleTreesInDirection(direction: List<Position>) =
+        buildSet {
+            var tallestTree = -1
+            for (position in direction) {
+                val tree = this@Forest[position]
+                if (tree > tallestTree) {
+                    tallestTree = tree
+                    add(position)
+                }
             }
         }
-    }
 
-    private fun TwoDimArray<Int>.allDirections() =
+    private fun Forest.allDirections() =
         sequenceOf(
             rowIndices.map { row -> columnIndices.map { row to it } },
             rowIndices.map { row -> columnIndices.reversed().map { row to it } },
@@ -41,4 +45,5 @@ class Day08_1 : Solver<Sequence<String>, Int> {
             columnIndices.map { col -> rowIndices.reversed().map { it to col } },
         )
             .flatten()
+
 }
