@@ -13,13 +13,6 @@ class Day08_2 : Solver<Sequence<String>, Int> {
             .maxOf { forest.scenicViewOf(it) }
     }
 
-    private fun forest(input: Sequence<String>) =
-        input
-            .map { it.toList() }
-            .map { it.map { c -> c.toString().toInt() } }
-            .toList()
-            .let(::Forest)
-
     private fun Forest.scenicViewOf(position: Point<Int>): Int {
         val treeHeight = this@Forest[position]
         return allDirections(position)
