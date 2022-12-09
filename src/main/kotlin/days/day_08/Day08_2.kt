@@ -1,7 +1,7 @@
 package days.day_08
 
 import util.Solver
-import util.position.Position
+import util.point.Point
 
 class Day08_2 : Solver<Sequence<String>, Int> {
     override fun solve(input: Sequence<String>): Int {
@@ -9,7 +9,7 @@ class Day08_2 : Solver<Sequence<String>, Int> {
 
         return forest
             .allPositions()
-            .filter { it.row in (1..<forest.rowCount - 1) && it.column in (1..<forest.columnCount - 1) }
+            .filter { it.x in (1..<forest.rowCount - 1) && it.y in (1..<forest.columnCount - 1) }
             .maxOf { forest.scenicViewOf(it) }
     }
 
@@ -20,7 +20,7 @@ class Day08_2 : Solver<Sequence<String>, Int> {
             .toList()
             .let(::Forest)
 
-    private fun Forest.scenicViewOf(position: Position<Int>): Int {
+    private fun Forest.scenicViewOf(position: Point<Int>): Int {
         val treeHeight = this@Forest[position]
         return allDirections(position)
             .map { direction -> direction.map { this@Forest[it] } }
@@ -40,16 +40,12 @@ class Day08_2 : Solver<Sequence<String>, Int> {
         return visibleTrees
     }
 
-    private fun Forest.allDirections(position: Position<Int>) =
+    private fun Forest.allDirections(position: Point<Int>) =
         sequenceOf(
-            (position.column - 1 downTo 0).asSequence().map { Position(position.row to it) },
-            (position.column + 1..<columnCount).asSequence().map { Position(position.row to it) },
-            (position.row - 1 downTo 0).asSequence().map { Position(it to position.column) },
-            (position.row + 1..<rowCount).asSequence().map { Position(it to position.column) },
+            (position.y - 1 downTo 0).asSequence().map { Point(position.x to it) },
+            (position.y + 1..<columnCount).asSequence().map { Point(position.x to it) },
+            (position.x - 1 downTo 0).asSequence().map { Point(it to position.y) },
+            (position.x + 1..<rowCount).asSequence().map { Point(it to position.y) },
         )
 
-    private val <L, R> Pair<L, R>.row
-        get() = first
-    private val <L, R> Pair<L, R>.column
-        get() = second
 }

@@ -1,6 +1,6 @@
 package util.array
 
-import util.position.Position
+import util.point.Point
 
 class TwoDimArray<T>(private val values: List<List<T>>) {
     init {
@@ -13,9 +13,9 @@ class TwoDimArray<T>(private val values: List<List<T>>) {
     val rowIndices = values.indices.asSequence()
     val columnIndices = values.first().indices.asSequence()
 
-    operator fun get(position: Position<Int>) = values[position.row][position.column]
+    operator fun get(position: Point<Int>) = values[position.x][position.y]
 
-    fun allPositions(): Sequence<Position<Int>> =
-        rowIndices.flatMap { row -> columnIndices.map { Position(row to it) } }
+    fun allPositions(): Sequence<Point<Int>> =
+        rowIndices.flatMap { row -> columnIndices.map { Point(row to it) } }
 
 }
