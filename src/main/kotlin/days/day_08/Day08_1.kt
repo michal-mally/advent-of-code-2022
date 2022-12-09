@@ -2,10 +2,10 @@ package days.day_08
 
 import util.Solver
 import util.array.TwoDimArray
+import util.position.Position
 
 typealias Forest = TwoDimArray<Int>
-typealias Position = Pair<Int, Int>
-typealias Direction = Sequence<Position>
+typealias Direction = Sequence<Position<Int>>
 
 class Day08_1 : Solver<Sequence<String>, Int> {
     override fun solve(input: Sequence<String>): Int {
@@ -13,7 +13,7 @@ class Day08_1 : Solver<Sequence<String>, Int> {
 
         return forest
             .allDirections()
-            .fold(emptySet<Position>()) { visibleTrees, direction ->
+            .fold(emptySet<Position<Int>>()) { visibleTrees, direction ->
                 visibleTrees + forest.visibleTreesInDirection(direction)
             }
             .size
@@ -40,8 +40,8 @@ class Day08_1 : Solver<Sequence<String>, Int> {
 
     private fun Forest.allDirections(): Sequence<Direction> =
         sequenceOf(
-            rowIndices.map { row -> columnIndices.map { row to it } },
-            columnIndices.map { column -> rowIndices.map { it to column } }
+            rowIndices.map { row -> columnIndices.map { Position(row to it) } },
+            columnIndices.map { column -> rowIndices.map { Position(it to column) } }
         )
             .reduce { acc, sequence -> acc + sequence }
             .flatMap { sequenceOf(it, it.toList().reversed().asSequence()) }
