@@ -37,13 +37,12 @@ class Day08_1 : Solver<Sequence<String>, Int> {
             }
         }
 
-    private fun Forest.allDirections() =
+    private fun Forest.allDirections(): Sequence<List<Position>> =
         sequenceOf(
             rowIndices.map { row -> columnIndices.map { row to it } },
-            rowIndices.map { row -> columnIndices.reversed().map { row to it } },
             columnIndices.map { col -> rowIndices.map { it to col } },
-            columnIndices.map { col -> rowIndices.reversed().map { it to col } },
         )
+            .flatMap { directions -> sequenceOf(directions, directions.map { it.reversed() }) }
             .flatten()
 
 }
