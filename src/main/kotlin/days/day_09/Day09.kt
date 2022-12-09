@@ -38,9 +38,7 @@ fun performMoves(knotCount: Int, moves: Sequence<Point<Int>>): Int {
 
 fun updateTailKnotPositions(knotPositions: MutableList<Point<Int>>) {
     fun updateTailKnotPosition(i: Int) {
-        val headKnot = knotPositions[i - 1]
-        val tailKnot = knotPositions[i]
-        val behindHead = headKnot - tailKnot
+        val behindHead = knotPositions[i - 1] - knotPositions[i]
         if (abs(behindHead.x) > 1 || abs(behindHead.y) > 1) {
             knotPositions[i] += behindHead.sign()
         }
