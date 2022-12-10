@@ -1,12 +1,16 @@
 package days.day_10
 
+import util.sequence.headAndTail
+
 fun xRegisterValues(input: Sequence<String>) =
     buildList {
+        fun parseCommand(command: String) = command.splitToSequence(" ").headAndTail()
+
         add(1)
-        for (cmd in input.map { it.split(" ") }) {
+        for ((cmd, args) in input.map(::parseCommand)) {
             add(0)
-            if (cmd[0] == "addx") {
-                add(cmd[1].toInt())
+            if (cmd == "addx") {
+                add(args.first().toInt())
             }
         }
     }
