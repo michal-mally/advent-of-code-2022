@@ -1,5 +1,6 @@
 package days.day_11
 
+import util.sequence.splitBy
 import java.math.BigInteger
 import java.math.BigInteger.ONE
 import java.math.BigInteger.ZERO
@@ -23,7 +24,7 @@ Monkey \d+:
     .trim()
     .toRegex()
 
-data class Monkey(
+private data class Monkey(
     val worryLevels: MutableList<BigInteger>,
     val operation: (BigInteger) -> BigInteger,
     val testDivisibleBy: BigInteger,
@@ -32,16 +33,12 @@ data class Monkey(
     val divisionAfterRound: BigInteger,
 ) {
 
-    context(List<Monkey>) fun play(): Int {
-        val numberSpace = map { it.testDivisibleBy }
-            .toSet()
-            .reduce(BigInteger::multiply)
-
+    context(Monkeys) fun play(): Int {
         val worryLevelsCount = worryLevels.size
         while (worryLevels.isNotEmpty()) {
             val oldWorryLevel = worryLevels.removeLast()
             val newWorryLevel = operation(oldWorryLevel) / divisionAfterRound
-            get(if (newWorryLevel.mod(testDivisibleBy) == ZERO) ifTrueThrowToMonkey else ifFalseThrowToMonkey)
+            monkeys[if (newWorryLevel.mod(testDivisibleBy) == ZERO) ifTrueThrowToMonkey else ifFalseThrowToMonkey]
                 .worryLevels
                 .add(newWorryLevel.mod(numberSpace))
         }
@@ -51,7 +48,7 @@ data class Monkey(
 
 }
 
-fun Monkey(representation: String, divisionAfterRound: BigInteger = ONE): Monkey {
+private fun Monkey(representation: String, divisionAfterRound: BigInteger): Monkey {
     val groups = (MONKEY_REGEX
         .matchEntire(representation)
         ?.groups
@@ -86,3 +83,33 @@ fun Monkey(representation: String, divisionAfterRound: BigInteger = ONE): Monkey
         divisionAfterRound
     )
 }
+
+private class Monkeys(val monkeys: List<Monkey>) {
+    val numberSpace = monkeys
+        .map(Monkey::testDivisibleBy)
+        .toSet()
+        .reduce(BigInteger::multiply)
+}
+
+private fun monkeys(input: Sequence<String>, divisionAfterRound: BigInteger) =
+    input
+        .splitBy { it == "" }
+        .map { it.joinToString("\n") }
+        .map { Monkey(it, divisionAfterRound) }
+        .toList()
+        .let(::Monkeys)
+
+fun play(input: Sequence<String>, rounds: Int, divisionAfterRound: BigInteger = ONE) =
+    with(monkeys(input, divisionAfterRound)) {
+        val inspections = MutableList(monkeys.size) { 0L }
+        repeat(rounds) {
+            monkeys.forEachIndexed { i, monkey ->
+                inspections[i] += monkey.play().toLong()
+            }
+        }
+
+        inspections
+            .sortedDescending()
+            .take(2)
+            .reduce(Long::times)
+    }
