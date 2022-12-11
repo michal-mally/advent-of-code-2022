@@ -71,9 +71,9 @@ private fun Monkey(representation: String, divisionAfterRound: BigInteger): Monk
     }
     val testDivisibleBy = groups[TEST_DIVISIBLE_BY]!!.value.toBigInteger()
     val toMonkey = mapOf(
-        true to groups[IF_TRUE_THROW_TO_MONKEY]!!.value.toInt(),
-        false to groups[IF_FALSE_THROW_TO_MONKEY]!!.value.toInt(),
-    )
+        true to IF_TRUE_THROW_TO_MONKEY,
+        false to IF_FALSE_THROW_TO_MONKEY,
+    ).mapValues { (_, value) -> groups[value]!!.value.toInt() }
 
     return Monkey(
         startingItems,
