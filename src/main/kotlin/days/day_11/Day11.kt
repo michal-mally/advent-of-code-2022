@@ -81,7 +81,7 @@ private fun Monkey(representation: String, divisionAfterRound: BigInteger): Monk
         operator(toOperand(LEFT_OPERAND), toOperand(RIGHT_OPERAND))
     }
     val testDivisibleBy = groupValue(TEST_DIVISIBLE_BY).toBigInteger()
-    val toMonkey = TO_MONKEY.mapValues { (_ , value) -> groupValue(value).toInt() }
+    val toMonkey = TO_MONKEY.mapValues { (_, value) -> groupValue(value).toInt() }
 
     return Monkey(
         startingItems,
@@ -109,15 +109,16 @@ private fun monkeys(input: Sequence<String>, divisionAfterRound: BigInteger) =
 
 fun play(input: Sequence<String>, rounds: Int, divisionAfterRound: BigInteger = ONE) =
     with(monkeys(input, divisionAfterRound)) {
-        val inspections = MutableList(monkeys.size) { 0L }
+        val inspections = MutableList(monkeys.size) { 0 }
         repeat(rounds) {
             monkeys.forEachIndexed { i, monkey ->
-                inspections[i] += monkey.play().toLong()
+                inspections[i] += monkey.play()
             }
         }
 
         inspections
             .sortedDescending()
             .take(2)
+            .map { it.toLong() }
             .reduce(Long::times)
     }
