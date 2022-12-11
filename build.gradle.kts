@@ -5,6 +5,13 @@ plugins {
     id("com.github.ben-manes.versions") version "0.44.0"
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(19))
+        vendor.set(JvmVendorSpec.AMAZON)
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -15,7 +22,6 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "19"
         freeCompilerArgs += listOf(
             "-Xcontext-receivers",
             "-opt-in=kotlin.ExperimentalStdlibApi",
