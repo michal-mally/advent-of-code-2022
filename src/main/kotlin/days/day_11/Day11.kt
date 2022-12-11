@@ -7,7 +7,7 @@ import util.sequence.splitBy
 import java.math.BigInteger
 import java.math.BigInteger.ONE
 
-private const val STARTING_WORRY_LEVELS = "startingWorryLevels"
+private const val STARTING_ITEM_WORRY_LEVELS = "startingItemWorryLevels"
 private const val LEFT_OPERAND = "leftOperand"
 private const val OPERATOR = "operator"
 private const val RIGHT_OPERAND = "rightOperand"
@@ -18,8 +18,8 @@ private val TO_MONKEY = mapOf(
 )
 
 private val MONKEY_REGEX = """
-    Monkey \d+:
-      Starting items: (?<$STARTING_WORRY_LEVELS>\d+(, \d+)*)
+    Monkey (\d+):
+      Starting items: (?<$STARTING_ITEM_WORRY_LEVELS>\d+(, \d+)*)
       Operation: new = (?<$LEFT_OPERAND>old|\d+) (?<$OPERATOR>[*\+]) (?<$RIGHT_OPERAND>old|\d+)
       Test: divisible by (?<$TEST_DIVISIBLE_BY>\d+)
         If true: throw to monkey (?<${TO_MONKEY[true]}>\d+)
@@ -29,7 +29,7 @@ private val MONKEY_REGEX = """
     .toRegex()
 
 private data class Monkey(
-    val worryLevels: MutableList<BigInteger>,
+    private val itemsWorryLevels: MutableList<BigInteger>,
     val operation: (BigInteger) -> BigInteger,
     val testDivisibleBy: BigInteger,
     val toMonkey: Map<Boolean, Int>,
@@ -40,14 +40,18 @@ private data class Monkey(
         fun targetMonkey(newWorryLevel: BigInteger) =
             monkeys[toMonkey[newWorryLevel isDivisibleBy testDivisibleBy]!!]
 
-        val worryLevelsCount = worryLevels.size
-        while (worryLevels.isNotEmpty()) {
-            val oldWorryLevel = worryLevels.removeLast()
+        val worryLevelsCount = itemsWorryLevels.size
+        while (itemsWorryLevels.isNotEmpty()) {
+            val oldWorryLevel = itemsWorryLevels.removeLast()
             val newWorryLevel = operation(oldWorryLevel) / divisionAfterRound
-            targetMonkey(newWorryLevel).worryLevels += newWorryLevel % numberSpace
+            targetMonkey(newWorryLevel).acceptItem(newWorryLevel % numberSpace)
         }
 
         return worryLevelsCount
+    }
+
+    fun acceptItem(worryLevel: BigInteger) {
+        itemsWorryLevels += worryLevel
     }
 
 }
@@ -60,22 +64,21 @@ private fun Monkey(representation: String, divisionAfterRound: BigInteger): Monk
 
     fun groupValue(name: String) = groups[name]!!.value
 
-    val startingItems = groupValue(STARTING_WORRY_LEVELS)
+    val startingItems = groupValue(STARTING_ITEM_WORRY_LEVELS)
         .split(", ")
-        .map { it.toBigInteger() }
+        .map(String::toBigInteger)
         .toMutableList()
     val operation = { old: BigInteger ->
         fun toOperand(operandGroup: String) =
-            groupValue(operandGroup).let { if (it == "old") old else it.toBigInteger() }
+            groupValue(operandGroup).toBigIntegerOrNull() ?: old
 
-        val operator = groupValue(OPERATOR)
-        val left = toOperand(LEFT_OPERAND)
-        val right = toOperand(RIGHT_OPERAND)
-        when (operator) {
-            "*" -> left * right
-            "+" -> left + right
-            else -> throw IllegalArgumentException("Invalid operator: $operator")
+        val operator = when (groupValue(OPERATOR)) {
+            "*" -> BigInteger::times
+            "+" -> BigInteger::plus
+            else -> throw IllegalArgumentException("Invalid operator: ${groupValue(OPERATOR)}")
         }
+
+        operator(toOperand(LEFT_OPERAND), toOperand(RIGHT_OPERAND))
     }
     val testDivisibleBy = groupValue(TEST_DIVISIBLE_BY).toBigInteger()
     val toMonkey = TO_MONKEY.mapValues { (_, value) -> groupValue(value).toInt() }
