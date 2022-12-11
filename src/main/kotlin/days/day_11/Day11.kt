@@ -40,14 +40,14 @@ private data class Monkey(
         fun targetMonkey(newWorryLevel: BigInteger) =
             monkeys[toMonkey[newWorryLevel isDivisibleBy testDivisibleBy]!!]
 
-        val worryLevelsCount = itemsWorryLevels.size
+        val itemsCount = itemsWorryLevels.size
         while (itemsWorryLevels.isNotEmpty()) {
             val oldWorryLevel = itemsWorryLevels.removeLast()
             val newWorryLevel = operation(oldWorryLevel) / divisionAfterRound
             targetMonkey(newWorryLevel).acceptItem(newWorryLevel % numberSpace)
         }
 
-        return worryLevelsCount
+        return itemsCount
     }
 
     fun acceptItem(worryLevel: BigInteger) {
@@ -81,7 +81,7 @@ private fun Monkey(representation: String, divisionAfterRound: BigInteger): Monk
         operator(toOperand(LEFT_OPERAND), toOperand(RIGHT_OPERAND))
     }
     val testDivisibleBy = groupValue(TEST_DIVISIBLE_BY).toBigInteger()
-    val toMonkey = TO_MONKEY.mapValues { (_, value) -> groupValue(value).toInt() }
+    val toMonkey = TO_MONKEY.mapValues { (_ , value) -> groupValue(value).toInt() }
 
     return Monkey(
         startingItems,
@@ -95,7 +95,7 @@ private fun Monkey(representation: String, divisionAfterRound: BigInteger): Monk
 private class Monkeys(val monkeys: List<Monkey>) {
     val numberSpace = monkeys
         .map(Monkey::testDivisibleBy)
-        .toSet()
+        .distinct()
         .reduce(BigInteger::multiply)
 }
 
