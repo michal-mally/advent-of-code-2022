@@ -2,10 +2,10 @@
 
 package days.day_11
 
+import util.biginteger.isDivisibleBy
 import util.sequence.splitBy
 import java.math.BigInteger
 import java.math.BigInteger.ONE
-import java.math.BigInteger.ZERO
 
 private const val STARTING_WORRY_LEVELS = "startingWorryLevels"
 private const val LEFT_OPERAND = "leftOperand"
@@ -38,13 +38,13 @@ private data class Monkey(
 
     context(Monkeys) fun play(): Int {
         fun targetMonkey(newWorryLevel: BigInteger) =
-            monkeys[toMonkey[newWorryLevel.mod(testDivisibleBy) == ZERO]!!]
+            monkeys[toMonkey[newWorryLevel isDivisibleBy testDivisibleBy]!!]
 
         val worryLevelsCount = worryLevels.size
         while (worryLevels.isNotEmpty()) {
             val oldWorryLevel = worryLevels.removeLast()
             val newWorryLevel = operation(oldWorryLevel) / divisionAfterRound
-            targetMonkey(newWorryLevel).worryLevels += newWorryLevel.mod(numberSpace)
+            targetMonkey(newWorryLevel).worryLevels += newWorryLevel % numberSpace
         }
 
         return worryLevelsCount
