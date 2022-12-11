@@ -15,10 +15,10 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "19"
         freeCompilerArgs += listOf(
             "-Xcontext-receivers",
-            "-Xopt-in=kotlin.ExperimentalStdlibApi",
+            "-opt-in=kotlin.ExperimentalStdlibApi",
         )
     }
 }
