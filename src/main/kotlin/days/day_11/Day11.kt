@@ -10,16 +10,18 @@ private const val LEFT_OPERAND = "leftOperand"
 private const val OPERATOR = "operator"
 private const val RIGHT_OPERAND = "rightOperand"
 private const val TEST_DIVISIBLE_BY = "testDivisibleBy"
-private const val IF_TRUE_THROW_TO_MONKEY = "ifTrueThrowToMonkey"
-private const val IF_FALSE_THROW_TO_MONKEY = "ifFalseThrowToMonkey"
+private val TO_MONKEY = mapOf(
+    true to "ifTrueThrowToMonkey",
+    false to "ifFalseThrowToMonkey",
+)
 
 private val MONKEY_REGEX = """
 Monkey \d+:
   Starting items: (?<$STARTING_WORRY_LEVELS>\d+(, \d+)*)
   Operation: new = (?<$LEFT_OPERAND>old|\d+) (?<$OPERATOR>[*\+]) (?<$RIGHT_OPERAND>old|\d+)
   Test: divisible by (?<$TEST_DIVISIBLE_BY>\d+)
-    If true: throw to monkey (?<$IF_TRUE_THROW_TO_MONKEY>\d+)
-    If false: throw to monkey (?<$IF_FALSE_THROW_TO_MONKEY>\d+)
+    If true: throw to monkey (?<${TO_MONKEY[true]}>\d+)
+    If false: throw to monkey (?<${TO_MONKEY[false]}>\d+)
 """
     .trim()
     .toRegex()
@@ -70,10 +72,7 @@ private fun Monkey(representation: String, divisionAfterRound: BigInteger): Monk
         }
     }
     val testDivisibleBy = groups[TEST_DIVISIBLE_BY]!!.value.toBigInteger()
-    val toMonkey = mapOf(
-        true to IF_TRUE_THROW_TO_MONKEY,
-        false to IF_FALSE_THROW_TO_MONKEY,
-    ).mapValues { (_, value) -> groups[value]!!.value.toInt() }
+    val toMonkey = TO_MONKEY.mapValues { (_, value) -> groups[value]!!.value.toInt() }
 
     return Monkey(
         startingItems,
