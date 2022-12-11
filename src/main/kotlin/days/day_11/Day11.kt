@@ -28,8 +28,7 @@ private data class Monkey(
     val worryLevels: MutableList<BigInteger>,
     val operation: (BigInteger) -> BigInteger,
     val testDivisibleBy: BigInteger,
-    val ifTrueThrowToMonkey: Int,
-    val ifFalseThrowToMonkey: Int,
+    val toMonkey: Map<Boolean, Int>,
     val divisionAfterRound: BigInteger,
 ) {
 
@@ -38,7 +37,7 @@ private data class Monkey(
         while (worryLevels.isNotEmpty()) {
             val oldWorryLevel = worryLevels.removeLast()
             val newWorryLevel = operation(oldWorryLevel) / divisionAfterRound
-            monkeys[if (newWorryLevel.mod(testDivisibleBy) == ZERO) ifTrueThrowToMonkey else ifFalseThrowToMonkey]
+            monkeys[toMonkey[newWorryLevel.mod(testDivisibleBy) == ZERO]!!]
                 .worryLevels
                 .add(newWorryLevel.mod(numberSpace))
         }
@@ -71,15 +70,16 @@ private fun Monkey(representation: String, divisionAfterRound: BigInteger): Monk
         }
     }
     val testDivisibleBy = groups[TEST_DIVISIBLE_BY]!!.value.toBigInteger()
-    val ifTrueThrowToMonkey = groups[IF_TRUE_THROW_TO_MONKEY]!!.value.toInt()
-    val ifFalseThrowToMonkey = groups[IF_FALSE_THROW_TO_MONKEY]!!.value.toInt()
+    val toMonkey = mapOf(
+        true to groups[IF_TRUE_THROW_TO_MONKEY]!!.value.toInt(),
+        false to groups[IF_FALSE_THROW_TO_MONKEY]!!.value.toInt(),
+    )
 
     return Monkey(
         startingItems,
         operation,
         testDivisibleBy,
-        ifTrueThrowToMonkey,
-        ifFalseThrowToMonkey,
+        toMonkey,
         divisionAfterRound
     )
 }
