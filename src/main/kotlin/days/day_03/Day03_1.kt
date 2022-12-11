@@ -7,10 +7,9 @@ class Day03_1 : Solver<Sequence<String>, Int> {
     override fun solve(input: Sequence<String>) =
         input
             .map(::extractCharFromLine)
-            .map {
+            .sumOf {
                 it.code - if (it.isLowerCase()) 'a'.code - 1 else 'A'.code - 27
             }
-            .sum()
 
     private fun extractCharFromLine(line: String) =
         line
