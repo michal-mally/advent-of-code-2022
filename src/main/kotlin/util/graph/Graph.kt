@@ -2,14 +2,14 @@ package util.graph
 
 import kotlin.math.min
 
-class Graph<V>(edges: Map<Edge<V>, Int>) {
+class Graph<V>(edgesWithWeights: Map<Edge<V>, Int>) {
 
-    private val edges = edges
+    private val edges = edgesWithWeights
         .entries
         .groupBy { (edge, _) -> edge.from }
         .mapValues { (_, edges) -> edges.associate { (edge, weight) -> edge.to to weight } }
 
-    private val vertices = edges
+    private val vertices = edgesWithWeights
         .keys
         .asSequence()
         .flatMap { sequenceOf(it.from, it.to) }
