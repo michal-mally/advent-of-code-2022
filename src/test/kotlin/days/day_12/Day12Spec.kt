@@ -10,4 +10,8 @@ class Day12Spec : FreeSpec({
         Day12_1().solve(lines(12)) shouldBe 394
     }
 
+    "Part 2" {
+        Day12_2().solve(lines(12)) shouldBe 394
+    }
+
 })
