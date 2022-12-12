@@ -2,6 +2,8 @@ package days.day_12
 
 import util.Solver
 import util.array.TwoDimArray
+import util.graph.Edge
+import util.graph.Graph
 import util.point.Point
 
 class Day12_1 : Solver<Sequence<String>, Int> {
@@ -11,39 +13,23 @@ class Day12_1 : Solver<Sequence<String>, Int> {
             .toList()
             .let { TwoDimArray(it) }
 
-        val graph = mutableSetOf<Pair<Point<Int>, Point<Int>>>()
-
-        for (position in heightMap.allPositions()) {
-            val height = heightMap.height(position)
-            for (neighbour in heightMap.neighbourPositions(position)) {
-                if (heightMap.height(neighbour) - height <= 1) {
-                    graph += position to neighbour
-                }
-            }
-        }
-
         val startPoint = heightMap
             .allPositions()
             .first { heightMap[it] == 'S' }
 
-        val distances = mutableMapOf<Point<Int>, Pair<Point<Int>, Int>>().apply { this[startPoint] = startPoint to 0 }
-        val remainingNodes = heightMap
-            .allPositions()
-            .toMutableSet()
-
-        while (remainingNodes.isNotEmpty()) {
-            val u = remainingNodes.minBy { distances[it]?.second ?: Int.MAX_VALUE }
-            remainingNodes.remove(u)
-
-            for (v in graph.filter { it.first == u }.map { it.second }.filter { it in remainingNodes }) {
-                val alt = (distances[u]?.second ?: Int.MAX_VALUE) + 1
-                if (alt < (distances[v]?.second ?: Int.MAX_VALUE)) {
-                    distances[v] = u to alt
-                }
-            }
-        }
-
-        return distances[heightMap.allPositions().first { heightMap[it] == 'E' }]!!.second
+        return Graph(
+            heightMap
+                .allPositions()
+                .toSet(),
+            heightMap
+                .allPositions()
+                .map { it to heightMap.neighbourPositions(it) }
+                .flatMap { (vertex, neighbours) -> neighbours.map { neighbour -> vertex to neighbour } }
+                .map { Edge(it) }
+                .filter { edge -> heightMap.height(edge.to) - heightMap.height(edge.from) <= 1 }
+                .associateWith { 1 }
+        )
+            .distancesFrom(startPoint)[heightMap.allPositions().first { heightMap[it] == 'E' }]!!
     }
 
     private fun TwoDimArray<Char>.height(position: Point<Int>) =
