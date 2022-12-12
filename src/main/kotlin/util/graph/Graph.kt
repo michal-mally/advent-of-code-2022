@@ -2,18 +2,11 @@ package util.graph
 
 import kotlin.math.min
 
-class Graph<V>(edgesWithWeights: Map<Edge<V>, Int>) {
+class Graph<V>(edges: Set<Edge<V>>) {
 
-    private val edges = edgesWithWeights
-        .entries
-        .groupBy { (edge, _) -> edge.from }
-        .mapValues { (_, edges) -> edges.associate { (edge, weight) -> edge.to to weight } }
+    private val edgesByFrom = edges.groupBy { edge -> edge.from }
 
-    private val vertices = edgesWithWeights
-        .keys
-        .asSequence()
-        .flatMap { sequenceOf(it.from, it.to) }
-        .toList()
+    private val vertices = edges.flatMap { sequenceOf(it.from, it.to) }
 
     fun distancesFrom(start: V): Map<V, Int> {
         val distances = mutableMapOf(start to 0)
@@ -27,10 +20,13 @@ class Graph<V>(edgesWithWeights: Map<Edge<V>, Int>) {
                 ?.also { remainingNodes.remove(it.key) }
                 ?: break
 
-            (edges[intermediate] ?: error("No edges for $intermediate"))
-                .filter { (to, _) -> to in remainingNodes }
-                .forEach { (to, weight) ->
-                    distances[to] = min(distanceToIntermediate + weight, distances[to] ?: Int.MAX_VALUE)
+            (edgesByFrom[intermediate] ?: error("No edges for $intermediate"))
+                .filter { edge -> edge.to in remainingNodes }
+                .forEach { edge ->
+                    distances[edge.to] = min(
+                        distanceToIntermediate + edge.weight,
+                        distances[edge.to] ?: Int.MAX_VALUE,
+                    )
                 }
         }
 
