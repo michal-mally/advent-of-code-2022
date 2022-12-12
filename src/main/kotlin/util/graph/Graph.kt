@@ -12,21 +12,25 @@ class Graph<V>(
         .flatMap { sequenceOf(it.from, it.to) }
         .toList()
 
-    fun distancesFrom(start: V): Map<V, Int?> {
-        val distances = mutableMapOf<V, Int?>().apply { this[start] = 0 }
+    fun distancesFrom(start: V): Map<V, Int> {
+        val distances = mutableMapOf(start to 0)
 
         val remainingNodes = vertices.toMutableSet()
-
         while (remainingNodes.isNotEmpty()) {
-            val u = remainingNodes.minBy { distances[it] ?: Int.MAX_VALUE }
-            remainingNodes.remove(u)
+            val (intermediate, distanceToIntermediate) = distances
+                .asSequence()
+                .filter { it.key in remainingNodes }
+                .minByOrNull { it.value }
+                ?.also { remainingNodes.remove(it.key) }
+                ?: break
 
-            val edgesToRemainingNodes = edges.filter { (edge, _) -> edge.from == u && edge.to in remainingNodes }
-            for (edge in edgesToRemainingNodes) {
-                val fromStartToU = distances[u] ?: continue
-
-                distances[edge.key.to] = min(fromStartToU + edge.value, distances[edge.key.to] ?: Int.MAX_VALUE)
-            }
+            edges
+                .asSequence()
+                .filter { (edge, _) -> edge.from == intermediate }
+                .filter { (edge, _) -> edge.to in remainingNodes }
+                .forEach { (edge, weight) ->
+                    distances[edge.to] = min(distanceToIntermediate + weight, distances[edge.to] ?: Int.MAX_VALUE)
+                }
         }
 
         return distances

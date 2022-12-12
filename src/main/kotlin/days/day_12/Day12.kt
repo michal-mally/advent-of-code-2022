@@ -31,7 +31,7 @@ fun TwoDimArray<Char>.start() =
 fun TwoDimArray<Char>.end() =
     allPositions().first { this[it] == 'E' }
 
-private fun TwoDimArray<Char>.height(position: Point<Int>) =
+fun TwoDimArray<Char>.height(position: Point<Int>) =
     when (this[position]) {
         'S' -> 0
         'E' -> 'z' - 'a'
