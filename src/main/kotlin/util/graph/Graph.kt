@@ -2,9 +2,12 @@ package util.graph
 
 import kotlin.math.min
 
-class Graph<V>(
-    private val edges: Map<Edge<V>, Int>
-) {
+class Graph<V>(edges: Map<Edge<V>, Int>) {
+
+    private val edges = edges
+        .entries
+        .groupBy { (edge, _) -> edge.from }
+        .mapValues { (_, edges) -> edges.associate { (edge, weight) -> edge.to to weight } }
 
     private val vertices = edges
         .keys
@@ -24,12 +27,10 @@ class Graph<V>(
                 ?.also { remainingNodes.remove(it.key) }
                 ?: break
 
-            edges
-                .asSequence()
-                .filter { (edge, _) -> edge.from == intermediate }
-                .filter { (edge, _) -> edge.to in remainingNodes }
-                .forEach { (edge, weight) ->
-                    distances[edge.to] = min(distanceToIntermediate + weight, distances[edge.to] ?: Int.MAX_VALUE)
+            (edges[intermediate] ?: error("No edges for $intermediate"))
+                .filter { (to, _) -> to in remainingNodes }
+                .forEach { (to, weight) ->
+                    distances[to] = min(distanceToIntermediate + weight, distances[to] ?: Int.MAX_VALUE)
                 }
         }
 
