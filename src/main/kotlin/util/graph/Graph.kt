@@ -3,9 +3,14 @@ package util.graph
 import kotlin.math.min
 
 class Graph<V>(
-    private val vertices: Set<V>,
     private val edges: Map<Edge<V>, Int>
 ) {
+
+    private val vertices = edges
+        .keys
+        .asSequence()
+        .flatMap { sequenceOf(it.from, it.to) }
+        .toList()
 
     fun distancesFrom(start: V): Map<V, Int?> {
         val distances = mutableMapOf<V, Int?>().apply { this[start] = 0 }
