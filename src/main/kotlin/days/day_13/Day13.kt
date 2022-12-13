@@ -14,25 +14,24 @@ class IntElementList(val value: List<Element>) : Element {
     override fun compareTo(other: Element): Int =
         when (other) {
             is IntElement -> compareTo(IntElementList(listOf(other)))
-            is IntElementList -> if (value.isEmpty() && other.value.isEmpty()) {
-                0
-            } else if (value.isEmpty()) {
-                -1
-            } else if (other.value.isEmpty()) {
-                1
-            } else if (value.first().compareTo(other.value.first()) != 0) {
-                value.first().compareTo(other.value.first())
-            } else {
-                IntElementList(value.drop(1)).compareTo(IntElementList(other.value.drop(1)))
-            }
+            is IntElementList ->
+                if (value.isEmpty() || other.value.isEmpty()) {
+                    value.size.compareTo(other.value.size)
+                } else {
+                    value
+                        .first()
+                        .compareTo(other.value.first())
+                        .takeIf { it != 0 }
+                        ?: IntElementList(value.drop(1)).compareTo(IntElementList(other.value.drop(1)))
+                }
         }
 }
 
 fun parseLine(line: String) =
     tokenize(line)
         .toList()
+        .drop(1)
         .let { ArrayDeque(it) }
-        .also { it.removeFirst() }
         .let { createList(it) }
 
 private fun tokenize(it: String) =
