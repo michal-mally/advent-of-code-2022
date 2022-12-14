@@ -6,6 +6,7 @@ import util.line.rangeTo
 import util.pair.toPair
 import util.point.Point
 import util.point.plus
+import util.number.count as intCount
 
 fun spotsTaken(input: Sequence<String>) =
     input
@@ -13,17 +14,14 @@ fun spotsTaken(input: Sequence<String>) =
         .flatMap(Line<Int>::allPoints)
         .toMutableSet()
 
-context(MutableSet<Point<Int>>) fun dropGrainsOfSand(lowestElevation: Int, fallThrough: Boolean): Int {
-    var stableGrains = 0
-    while (true) {
-        val fallPosition = dropGrainOfSand(this@MutableSet, lowestElevation, fallThrough) ?: break
-
-        stableGrains++
-        this@MutableSet += fallPosition
+context(MutableSet<Point<Int>>) fun dropGrainsOfSand(lowestElevation: Int, fallThrough: Boolean) =
+    intCount {
+        while (true) {
+            this@MutableSet += dropGrainOfSand(this@MutableSet, lowestElevation, fallThrough)
+                ?: break
+            inc()
+        }
     }
-
-    return stableGrains
-}
 
 private tailrec fun dropGrainOfSand(
     spotsTaken: Set<Point<Int>>,
