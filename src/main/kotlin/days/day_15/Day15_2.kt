@@ -3,6 +3,8 @@ package days.day_15
 import util.Solver
 import util.point.Point
 
+private const val MAX_XY = 4000000L
+
 class Day15_2 : Solver<Sequence<String>, Long> {
     override fun solve(input: Sequence<String>): Long {
         val sensorsAndBeacons = sensorsAndBeacons(input)
@@ -10,8 +12,8 @@ class Day15_2 : Solver<Sequence<String>, Long> {
             .sortedByDescending { (_, distanceFromSensorToBeacon) -> distanceFromSensorToBeacon }
             .toList()
 
-        var x = 0
-        var y = 0
+        var x = 0L
+        var y = 0L
         while (true) {
             val pointXY = Point(x to y)
             val xToAdd = sensorsAndBeacons
@@ -20,9 +22,9 @@ class Day15_2 : Solver<Sequence<String>, Long> {
                     distanceToBeacon - sensor.manhattanDistanceTo(pointXY)
                 }
                 .firstOrNull { it >= 0 }
-                ?: return (x * 4000000L + y)
+                ?: return (x * MAX_XY + y)
             x += xToAdd + 1
-            if (x >= 4000000) {
+            if (x >= MAX_XY) {
                 x = 0
                 y++
             }
