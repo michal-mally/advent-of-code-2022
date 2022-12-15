@@ -1,7 +1,7 @@
 package days.day_04
 
 import util.Solver
-import util.pair.mapLeftAndRight
+import util.pair.mapFirstAndSecond
 import util.pair.toPair
 import util.pair.toRange
 
@@ -17,13 +17,13 @@ class Day04_2 : Solver<Sequence<String>, Int> {
         line
             .split(",")
             .toPair()
-            .mapLeftAndRight(::transformToRange)
+            .mapFirstAndSecond(::transformToRange)
 
     private fun transformToRange(range: String) =
         range
             .split("-")
             .toPair()
-            .mapLeftAndRight(String::toInt)
+            .mapFirstAndSecond(String::toInt)
             .toRange()
 
 }

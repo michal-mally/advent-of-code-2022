@@ -18,4 +18,3 @@ operator fun Point<Int>.minus(position: Point<Int>): Point<Int> =
 
 fun Point<Int>.sign(): Point<Int> =
     Point(x.sign to y.sign)
-

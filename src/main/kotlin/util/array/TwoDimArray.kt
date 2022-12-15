@@ -4,8 +4,8 @@ import util.point.Point
 
 class TwoDimArray<T>(private val values: List<List<T>>) {
     init {
-        require(values.isNotEmpty())
-        require(values.all { it.size == values[0].size })
+        require(values.isNotEmpty()) { "Array must not be empty" }
+        require(values.all { it.size == values[0].size }) { "All rows must have the same length" }
     }
 
     val rowCount = values.size

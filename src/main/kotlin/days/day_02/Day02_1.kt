@@ -19,7 +19,7 @@ class Day02_1 : Solver<Sequence<String>, Int> {
             .toPair()
             .map { first, second -> (first - 'A'.code) to (second - 'X'.code) }
             .mapLeft { first, second -> second - first + 4 }
-            .mapLeftAndRight { it % 3 }
+            .mapFirstAndSecond { it % 3 }
             .map { first, second -> first * 3 to second + 1 }
 
 }

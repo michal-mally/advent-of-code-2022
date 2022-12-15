@@ -3,7 +3,7 @@ package util.pair
 fun <A, B, C> Pair<A, B>.map(f: (A, B) -> C): C =
     f(first, second)
 
-fun <A, B> Pair<A, A>.mapLeftAndRight(f: (A) -> B): Pair<B, B> =
+fun <A, B> Pair<A, A>.mapFirstAndSecond(f: (A) -> B): Pair<B, B> =
     f(first) to f(second)
 
 fun <A, B, C> Pair<A, B>.mapLeft(f: (A, B) -> C): Pair<C, B> =
