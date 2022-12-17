@@ -7,7 +7,7 @@ import util.file.chars
 class Day17Spec : FreeSpec({
 
     "Part 1" {
-        Day17_1().solve(chars(17)) shouldBe 3068
+        Day17_1().solve(chars(17)) shouldBe 3153
     }
 
 })
