@@ -4,7 +4,7 @@ import util.Solver
 import util.point.Point
 import util.point.plus
 
-private data class Rock(val segments: Set<Point<Int>>) {
+data class Rock(val segments: Set<Point<Int>>) {
 
     init {
         require(segments.isNotEmpty()) { "No segments" }
@@ -31,7 +31,7 @@ private fun String.toRock(): Rock =
         .toSet()
         .let(::Rock)
 
-private val rocks =
+val rocks =
     listOf(
         """
         ####
