@@ -4,6 +4,24 @@ import util.Solver
 
 data class XYZ<T>(val x: T, val y: T, val z: T)
 
+class Cubes(val cubes: Set<XYZ<Int>>) {
+
+    init {
+        require(cubes.isNotEmpty()) { "Cubes must not be empty." }
+    }
+
+    val extent =
+        XYZ(
+            x = cubes.map { it.x }.let { it.minOrNull()!!..it.maxOrNull()!! },
+            y = cubes.map { it.y }.let { it.minOrNull()!!..it.maxOrNull()!! },
+            z = cubes.map { it.z }.let { it.minOrNull()!!..it.maxOrNull()!! },
+        )
+
+    operator fun contains(xyz: XYZ<Int>) =
+        xyz in cubes
+
+}
+
 fun XYZ<Int>.neighbours() =
     sequence {
         yield(XYZ(x - 1, y, z))
@@ -14,14 +32,6 @@ fun XYZ<Int>.neighbours() =
         yield(XYZ(x, y, z + 1))
     }
 
-fun Set<XYZ<Int>>.extent(): XYZ<IntRange> {
-    check(isNotEmpty()) { "Set is empty" }
-    return XYZ(
-        x = map { it.x }.let { it.minOrNull()!!..it.maxOrNull()!! },
-        y = map { it.y }.let { it.minOrNull()!!..it.maxOrNull()!! },
-        z = map { it.z }.let { it.minOrNull()!!..it.maxOrNull()!! },
-    )
-}
 
 operator fun XYZ<IntRange>.contains(cube: XYZ<Int>) =
     cube.x in x && cube.y in y && cube.z in z
@@ -31,19 +41,19 @@ class Day18_2 : Solver<Sequence<String>, Int> {
         val cubes = input
             .map(::toXYZ)
             .toSet()
-        val cubesExtent = cubes.extent()
+            .let(::Cubes)
+
         val knownToBeAlreadyInside = mutableSetOf<XYZ<Int>>()
 
         return cubes
-            .asSequence()
+            .cubes
             .flatMap { it.neighbours() }
             .filter { it !in cubes }
-            .count { cube -> !inside(cubes, cubesExtent, knownToBeAlreadyInside, cube) }
+            .count { cube -> !inside(cubes, knownToBeAlreadyInside, cube) }
     }
 
     private fun inside(
-        cubes: Set<XYZ<Int>>,
-        cubesRange: XYZ<IntRange>,
+        cubes: Cubes,
         knownToBeAlreadyInside: MutableSet<XYZ<Int>>,
         cube: XYZ<Int>,
     ): Boolean {
@@ -52,7 +62,7 @@ class Day18_2 : Solver<Sequence<String>, Int> {
 
         val alreadyConsidered = mutableSetOf(cube)
 
-        while(true) {
+        while (true) {
             val newlyDiscoveredEmptyNeighbours = alreadyConsidered
                 .asSequence()
                 .flatMap { it.neighbours() }
@@ -64,7 +74,7 @@ class Day18_2 : Solver<Sequence<String>, Int> {
                 return true
             }
 
-            if (newlyDiscoveredEmptyNeighbours.any { it !in cubesRange }) return false
+            if (newlyDiscoveredEmptyNeighbours.any { it !in cubes.extent }) return false
 
             alreadyConsidered += newlyDiscoveredEmptyNeighbours
         }
