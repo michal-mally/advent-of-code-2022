@@ -14,7 +14,7 @@ fun XYZ<Int>.neighbours() =
         yield(XYZ(x, y, z + 1))
     }
 
-fun Set<XYZ<Int>>.range(): XYZ<IntRange> {
+fun Set<XYZ<Int>>.extent(): XYZ<IntRange> {
     check(isNotEmpty()) { "Set is empty" }
     return XYZ(
         x = map { it.x }.let { it.minOrNull()!!..it.maxOrNull()!! },
@@ -29,48 +29,44 @@ operator fun XYZ<IntRange>.contains(cube: XYZ<Int>) =
 class Day18_2 : Solver<Sequence<String>, Int> {
     override fun solve(input: Sequence<String>): Int {
         val cubes = input
-            .map { toXYZ(it) }
+            .map(::toXYZ)
             .toSet()
-
-        val cubesRange = cubes.range()
-
-        val alreadyInside = mutableSetOf<XYZ<Int>>()
+        val cubesExtent = cubes.extent()
+        val knownToBeAlreadyInside = mutableSetOf<XYZ<Int>>()
 
         return cubes
             .asSequence()
             .flatMap { it.neighbours() }
             .filter { it !in cubes }
-            .count { !inside(cubes, cubesRange, it, alreadyInside) }
+            .count { cube -> !inside(cubes, cubesExtent, knownToBeAlreadyInside, cube) }
     }
 
     private fun inside(
         cubes: Set<XYZ<Int>>,
         cubesRange: XYZ<IntRange>,
+        knownToBeAlreadyInside: MutableSet<XYZ<Int>>,
         cube: XYZ<Int>,
-        alreadyInside: MutableSet<XYZ<Int>>,
     ): Boolean {
-        if (cube in alreadyInside) {
-            return true
-        }
+        check(cube !in cubes) { "Cube $cube is part of cubes!" }
+        if (cube in knownToBeAlreadyInside) return true
 
-        val already = mutableSetOf(cube)
+        val alreadyConsidered = mutableSetOf(cube)
 
         while(true) {
-            val toAdd = already
+            val newlyDiscoveredEmptyNeighbours = alreadyConsidered
                 .asSequence()
                 .flatMap { it.neighbours() }
-                .filter { it !in already }
+                .filter { it !in alreadyConsidered }
                 .filter { it !in cubes }
                 .toSet()
-            if (toAdd.isEmpty()) {
-                alreadyInside += already
+            if (newlyDiscoveredEmptyNeighbours.isEmpty()) {
+                knownToBeAlreadyInside += alreadyConsidered
                 return true
             }
 
-            if (toAdd.any { it !in cubesRange })
-                return false
+            if (newlyDiscoveredEmptyNeighbours.any { it !in cubesRange }) return false
 
-            already.addAll(toAdd)
+            alreadyConsidered += newlyDiscoveredEmptyNeighbours
         }
     }
 
