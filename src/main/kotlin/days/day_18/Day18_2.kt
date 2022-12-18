@@ -34,18 +34,25 @@ class Day18_2 : Solver<Sequence<String>, Int> {
 
         val cubesRange = cubes.range()
 
+        val alreadyInside = mutableSetOf<XYZ<Int>>()
+
         return cubes
             .asSequence()
             .flatMap { it.neighbours() }
             .filter { it !in cubes }
-            .count { !inside(cubes, cubesRange, it) }
+            .count { !inside(cubes, cubesRange, it, alreadyInside) }
     }
 
     private fun inside(
         cubes: Set<XYZ<Int>>,
         cubesRange: XYZ<IntRange>,
-        cube: XYZ<Int>
+        cube: XYZ<Int>,
+        alreadyInside: MutableSet<XYZ<Int>>,
     ): Boolean {
+        if (cube in alreadyInside) {
+            return true
+        }
+
         val already = mutableSetOf(cube)
 
         while(true) {
@@ -56,6 +63,7 @@ class Day18_2 : Solver<Sequence<String>, Int> {
                 .filter { it !in cubes }
                 .toSet()
             if (toAdd.isEmpty()) {
+                alreadyInside += already
                 return true
             }
 
