@@ -42,6 +42,7 @@ class Day19_1 : Solver<Sequence<String>, Int> {
     override fun solve(input: Sequence<String>) =
         input
             .map(::parseProductionCosts)
+            .onEachIndexed { index, _ -> println("Blueprint: ${index + 1}") }
             .mapIndexed { index, blueprint -> (index + 1) * evaluate(blueprint) }
             .sum()
 
@@ -50,6 +51,7 @@ class Day19_1 : Solver<Sequence<String>, Int> {
 
         val totalMinutes = 24
         val nextProductions = nextProduction(totalMinutes, factory)
+        println(nextProductions)
         repeat(totalMinutes) { minute ->
             println("== Minute ${minute + 1} ==")
             val nextProduction = nextProductions.removeFirst()
@@ -105,7 +107,7 @@ class Day19_1 : Solver<Sequence<String>, Int> {
             .filterNot {
                 factory
                     .productionCosts
-                    .all { (_, costs) -> costs.getOrDefault(it, 0) < factory.resources.getValue(it) }
+                    .all { (_, costs) -> costs.getOrDefault(it, 0) + 1 < factory.resources.getValue(it) }
             }
             .map { robotType ->
                 val newFactory = factory
@@ -126,7 +128,6 @@ class Day19_1 : Solver<Sequence<String>, Int> {
                 }
             }
             .maxBy { it.second }
-//            .also { cache[CacheKey(minutesLeft, robots, resources)] = it }
     }
 
     private fun parseProductionCosts(blueprint: String) =
