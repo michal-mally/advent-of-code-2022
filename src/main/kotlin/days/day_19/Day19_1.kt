@@ -1,8 +1,48 @@
 package days.day_19
 
 import util.Solver
+import util.map.addValues
+import util.map.minusValues
+import kotlin.math.min
 
 class Day19_1 : Solver<Sequence<String>, Int> {
+
+    data class CacheKey(
+        val minutesLeft: Int,
+        val robots: Map<String, Int>,
+        val resources: Map<String, Int>,
+    )
+
+    val cache = mutableMapOf<CacheKey, Pair<String?, Int>>()
+
+    data class Factory(
+        val productionCosts: Map<String, Map<String, Int>>,
+        val robots: Map<String, Int> = mapOf("ore" to 1, "clay" to 0, "obsidian" to 0, "geode" to 0),
+        val resources: Map<String, Int> = mapOf("ore" to 0, "clay" to 0, "obsidian" to 0, "geode" to 0),
+    ) {
+
+        fun consumeRobotCosts(robotType: String) =
+            this.copy(
+                resources = resources.minusValues(productionCosts.getValue(robotType)),
+            )
+
+        fun produceResources() =
+            this.copy(
+                resources = resources.addValues(robots)
+            )
+
+        fun produceRobot(robotType: String) =
+            this.copy(
+                robots = robots.addValues(mapOf(robotType to 1)),
+            )
+
+        fun canBeBuilt(robotType: String) =
+            productionCosts
+                .getValue(robotType)
+                .all { (resource, amount) -> resources.getValue(resource) >= amount }
+
+    }
+
     override fun solve(input: Sequence<String>) =
         input
             .map(::parseProductionCosts)
@@ -10,12 +50,14 @@ class Day19_1 : Solver<Sequence<String>, Int> {
             .sum()
 
     private fun evaluate(productionCosts: Map<String, Map<String, Int>>): Int {
-        val robots = mutableMapOf("ore" to 1).withDefault { 0 }
-        val resources = mutableMapOf<String, Int>().withDefault { 0 }
+        var factory = Factory(productionCosts)
 
         repeat(24) { minute ->
             println("== Minute ${minute + 1} ==")
-            val nextProduction = decideNextProduction(productionCosts, robots, resources)
+//            println("productionCosts: $productionCosts")
+//            println("robots: $robots")
+//            println("resources: $resources")
+            val nextProduction = bestOutcome(min(24 - minute + 1, 18), factory).first
             if (nextProduction != null) {
                 println(
                     "Spend ${
@@ -23,37 +65,68 @@ class Day19_1 : Solver<Sequence<String>, Int> {
                             .joinToString(" and ")
                     } to start building ${if (nextProduction.startsWith("o")) "an" else "a"} $nextProduction-collecting robot."
                 )
-                productionCosts
-                    .getValue(nextProduction)
-                    .forEach { (resource, cost) ->
-                        resources[resource] = resources.getValue(resource) - cost
-                    }
+                factory = factory.consumeRobotCosts(nextProduction)
             }
-            robots.forEach { (resource, amount) ->
-                resources[resource] = resources.getValue(resource) + amount
-                println("$amount $resource-collecting ${if (amount == 1) "robot collects" else "robots collect"} $amount $resource; you now have ${resources[resource]} $resource.")
+            factory = factory.produceResources()
+            factory
+                .robots
+                .filter { (_, amount) -> amount > 0 }
+                .forEach { (resource, amount) ->
+                println("$amount $resource-collecting ${if (amount == 1) "robot collects" else "robots collect"} $amount $resource; you now have ${factory.resources[resource]} $resource.")
             }
             if (nextProduction != null) {
-                robots[nextProduction] = robots.getValue(nextProduction) + 1
-                println("The new $nextProduction-collecting robot is ready; you now have ${robots[nextProduction]} of them.")
+                factory = factory.produceRobot(nextProduction)
+                println("The new $nextProduction-collecting robot is ready; you now have ${factory.robots[nextProduction]} of them.")
             }
             println()
         }
 
-        return resources.getValue("geode")
+        return factory.resources.getValue("geode")
     }
 
-    private fun decideNextProduction(
-        productionCosts: Map<String, Map<String, Int>>,
-        robots: Map<String, Int>,
-        resources: Map<String, Int>
-    ): String? {
-        fun canBeBuilt(robotType: String) =
-            productionCosts
-                .getValue(robotType)
-                .all { (resource, amount) -> resources.getValue(resource) >= amount }
+    private fun bestOutcome(
+        minutesLeft: Int,
+        factory: Factory,
+    ): Pair<String?, Int> {
+        if (minutesLeft == 0) {
+            return null to factory.resources.getValue("geode")
+        }
 
-        return sequenceOf("geode", "obsidian", "clay", "ore").firstOrNull { canBeBuilt(it) }
+//        if (cache.containsKey(CacheKey(minutesLeft, robots, resources))) {
+//            return cache.getValue(CacheKey(minutesLeft, robots, resources))
+//        }
+
+        if (factory.canBeBuilt("geode")) {
+            val robotType = "geode"
+            val newFactory = factory
+                .consumeRobotCosts(robotType)
+                .produceResources()
+                .produceRobot(robotType)
+            return robotType to bestOutcome(minutesLeft - 1, newFactory).second
+        }
+
+        return sequenceOf("obsidian", "clay", "ore")
+            .filter { factory.canBeBuilt(it) }
+            .map { robotType ->
+                val newFactory = factory
+                    .consumeRobotCosts(robotType)
+                    .produceResources()
+                    .produceRobot(robotType)
+                robotType to bestOutcome(minutesLeft - 1, newFactory).second
+            }
+            .let {
+                sequence {
+                    yieldAll(it)
+                    yield(
+                        null to bestOutcome(
+                            minutesLeft - 1,
+                            factory.produceResources()
+                        ).second
+                    )
+                }
+            }
+            .maxBy { it.second }
+//            .also { cache[CacheKey(minutesLeft, robots, resources)] = it }
     }
 
     private fun parseProductionCosts(blueprint: String) =
