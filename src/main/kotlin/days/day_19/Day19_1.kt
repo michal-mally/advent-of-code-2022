@@ -3,6 +3,7 @@ package days.day_19
 import util.Solver
 import util.map.addValues
 import util.map.minusValues
+import util.pair.map
 
 class Day19_1 : Solver<Sequence<String>, Int> {
 
@@ -47,9 +48,11 @@ class Day19_1 : Solver<Sequence<String>, Int> {
     private fun evaluate(productionCosts: Map<String, Map<String, Int>>): Int {
         var factory = Factory(productionCosts)
 
-        repeat(24) { minute ->
+        val totalMinutes = 24
+        val nextProductions = nextProduction(totalMinutes, factory)
+        repeat(totalMinutes) { minute ->
             println("== Minute ${minute + 1} ==")
-            val nextProduction = nextProduction(minute, factory)
+            val nextProduction = nextProductions.removeFirst()
             if (nextProduction != null) {
                 println(
                     "Spend ${
@@ -76,20 +79,16 @@ class Day19_1 : Solver<Sequence<String>, Int> {
         return factory.resources.getValue("geode")
     }
 
-    private fun nextProduction(minute: Int, factory: Factory): String? {
-        if (factory.canBeBuilt().toList().isEmpty()) {
-            return null
-        }
-
-        return bestOutcome(24 - minute + 1, factory).first
+    private fun nextProduction(minutesLeft: Int, factory: Factory): ArrayDeque<String?> {
+        return ArrayDeque(bestOutcome(minutesLeft, factory).first.reversed())
     }
 
     private fun bestOutcome(
         minutesLeft: Int,
         factory: Factory,
-    ): Pair<String?, Int> {
+    ): Pair<List<String?>, Int> {
         if (minutesLeft == 0) {
-            return null to factory.resources.getValue("geode")
+            return emptyList<String?>() to factory.resources.getValue("geode")
         }
 
         if (factory.canBeBuilt("geode")) {
@@ -98,7 +97,7 @@ class Day19_1 : Solver<Sequence<String>, Int> {
                 .consumeRobotCosts(robotType)
                 .produceResources()
                 .produceRobot(robotType)
-            return robotType to bestOutcome(minutesLeft - 1, newFactory).second
+            return bestOutcome(minutesLeft - 1, newFactory).map { moves, value -> moves + robotType to value }
         }
 
         return sequenceOf("obsidian", "clay", "ore")
@@ -113,16 +112,16 @@ class Day19_1 : Solver<Sequence<String>, Int> {
                     .consumeRobotCosts(robotType)
                     .produceResources()
                     .produceRobot(robotType)
-                robotType to bestOutcome(minutesLeft - 1, newFactory).second
+                bestOutcome(minutesLeft - 1, newFactory).map { moves, value -> moves + robotType to value }
             }
             .let {
                 sequence {
                     yieldAll(it)
                     yield(
-                        null to bestOutcome(
+                        bestOutcome(
                             minutesLeft - 1,
                             factory.produceResources()
-                        ).second
+                        ).map { moves, value -> moves + null to value }
                     )
                 }
             }
