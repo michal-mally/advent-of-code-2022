@@ -3,17 +3,8 @@ package days.day_19
 import util.Solver
 import util.map.addValues
 import util.map.minusValues
-import kotlin.math.min
 
 class Day19_1 : Solver<Sequence<String>, Int> {
-
-    data class CacheKey(
-        val minutesLeft: Int,
-        val robots: Map<String, Int>,
-        val resources: Map<String, Int>,
-    )
-
-    val cache = mutableMapOf<CacheKey, Pair<String?, Int>>()
 
     data class Factory(
         val productionCosts: Map<String, Map<String, Int>>,
@@ -41,6 +32,10 @@ class Day19_1 : Solver<Sequence<String>, Int> {
                 .getValue(robotType)
                 .all { (resource, amount) -> resources.getValue(resource) >= amount }
 
+        fun canBeBuilt() =
+            sequenceOf("ore", "clay", "obsidian", "geode")
+                .filter { canBeBuilt(it) }
+
     }
 
     override fun solve(input: Sequence<String>) =
@@ -54,10 +49,7 @@ class Day19_1 : Solver<Sequence<String>, Int> {
 
         repeat(24) { minute ->
             println("== Minute ${minute + 1} ==")
-//            println("productionCosts: $productionCosts")
-//            println("robots: $robots")
-//            println("resources: $resources")
-            val nextProduction = bestOutcome(min(24 - minute + 1, 18), factory).first
+            val nextProduction = nextProduction(minute, factory)
             if (nextProduction != null) {
                 println(
                     "Spend ${
@@ -72,8 +64,8 @@ class Day19_1 : Solver<Sequence<String>, Int> {
                 .robots
                 .filter { (_, amount) -> amount > 0 }
                 .forEach { (resource, amount) ->
-                println("$amount $resource-collecting ${if (amount == 1) "robot collects" else "robots collect"} $amount $resource; you now have ${factory.resources[resource]} $resource.")
-            }
+                    println("$amount $resource-collecting ${if (amount == 1) "robot collects" else "robots collect"} $amount $resource; you now have ${factory.resources[resource]} $resource.")
+                }
             if (nextProduction != null) {
                 factory = factory.produceRobot(nextProduction)
                 println("The new $nextProduction-collecting robot is ready; you now have ${factory.robots[nextProduction]} of them.")
@@ -84,6 +76,14 @@ class Day19_1 : Solver<Sequence<String>, Int> {
         return factory.resources.getValue("geode")
     }
 
+    private fun nextProduction(minute: Int, factory: Factory): String? {
+        if (factory.canBeBuilt().toList().isEmpty()) {
+            return null
+        }
+
+        return bestOutcome(24 - minute + 1, factory).first
+    }
+
     private fun bestOutcome(
         minutesLeft: Int,
         factory: Factory,
@@ -91,10 +91,6 @@ class Day19_1 : Solver<Sequence<String>, Int> {
         if (minutesLeft == 0) {
             return null to factory.resources.getValue("geode")
         }
-
-//        if (cache.containsKey(CacheKey(minutesLeft, robots, resources))) {
-//            return cache.getValue(CacheKey(minutesLeft, robots, resources))
-//        }
 
         if (factory.canBeBuilt("geode")) {
             val robotType = "geode"
@@ -107,6 +103,11 @@ class Day19_1 : Solver<Sequence<String>, Int> {
 
         return sequenceOf("obsidian", "clay", "ore")
             .filter { factory.canBeBuilt(it) }
+            .filterNot {
+                factory
+                    .productionCosts
+                    .all { (_, costs) -> costs.getOrDefault(it, 0) < factory.resources.getValue(it) }
+            }
             .map { robotType ->
                 val newFactory = factory
                     .consumeRobotCosts(robotType)
