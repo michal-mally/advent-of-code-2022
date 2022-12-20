@@ -9,3 +9,6 @@ class IntHolder(var value: Int = 0) {
         return this
     }
 }
+
+infix fun Long.nonNegativeModulo(operand: Int): Int =
+    ((this % operand + operand) % operand).toInt()
