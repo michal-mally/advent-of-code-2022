@@ -18,7 +18,7 @@ fun solve(input: Sequence<Long>, numberOfMixes: Int = 1): Long {
         .sum()
 }
 
-private fun LinkedList<IndexedValue<Long>>.mix(initialListIndexed: List<IndexedValue<Long>>) {
+private fun MutableList<IndexedValue<Long>>.mix(initialListIndexed: List<IndexedValue<Long>>) {
     for (indexedValue in initialListIndexed) {
         indexOf(indexedValue)
             .also(::removeAt)
