@@ -7,6 +7,6 @@ class Day20_2 : Solver<Sequence<String>, Long> {
         input
             .map { it.toLong() }
             .map { it * 811589153 }
-            .let { solve(it, repeat = 10) }
+            .let { solve(it, numberOfMixes = 10) }
 
 }

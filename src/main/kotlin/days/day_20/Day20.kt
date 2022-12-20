@@ -3,32 +3,41 @@ package days.day_20
 import util.number.nonNegativeModulo
 import java.util.*
 
-fun solve(input: Sequence<Long>, repeat: Int = 1): Long {
+fun solve(input: Sequence<Long>, numberOfMixes: Int = 1): Long {
     val initialListIndexed = input
-        .mapIndexed { index, number -> index to number }
+        .mapIndexed { index, number -> IndexedValue(index to number) }
         .toList()
 
     return LinkedList(initialListIndexed)
-        .apply {
-            repeat(repeat) {
-                for (number in initialListIndexed) {
-                    val indexOf = indexOf(number)
-                    removeAt(indexOf)
-                    add((indexOf + number.second) nonNegativeModulo size, number)
-                }
-            }
-        }
-        .let { decryptedList ->
-            sequence {
-                yieldAll(decryptedList.dropWhile { it.second != 0L })
-                while (true) {
-                    yieldAll(decryptedList)
-                }
-            }
-        }
-        .map { it.second }
+        .apply { repeat(numberOfMixes) { mix(initialListIndexed) } }
+        .map { it.value }
+        .cyclicSequence(0L)
         .filterIndexed { index, _ -> index % 1000 == 0 }
         .drop(1)
         .take(3)
         .sum()
+}
+
+private fun LinkedList<IndexedValue<Long>>.mix(initialListIndexed: List<IndexedValue<Long>>) {
+    for (indexedValue in initialListIndexed) {
+        indexOf(indexedValue)
+            .also(::removeAt)
+            .let { index -> index + indexedValue.value }
+            .let { index -> index nonNegativeModulo size }
+            .let { index -> add(index, indexedValue) }
+    }
+}
+
+private fun <T> Collection<T>.cyclicSequence(start: T) =
+    let { list ->
+        sequence {
+            yieldAll(list.dropWhile { it != start })
+            while (true) {
+                yieldAll(list)
+            }
+        }
+    }
+
+private data class IndexedValue<T>(private val indexAndValue: Pair<Int, T>) {
+    val value get() = indexAndValue.second
 }
