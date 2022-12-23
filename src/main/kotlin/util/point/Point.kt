@@ -10,11 +10,27 @@ value class Point<T>(private val position: Pair<T, T>) {
         get() = position.second
 }
 
-operator fun Point<Int>.plus(position: Point<Int>): Point<Int> =
-    Point(x + position.x to y + position.y)
 
-operator fun Point<Int>.minus(position: Point<Int>): Point<Int> =
-    Point(x - position.x to y - position.y)
+operator fun Point<Int>.plus(point: Point<Int>): Point<Int> =
+    Point(x + point.x to y + point.y)
+
+operator fun Point<Int>.minus(point: Point<Int>): Point<Int> =
+    Point(x - point.x to y - point.y)
 
 fun Point<Int>.sign(): Point<Int> =
     Point(x.sign to y.sign)
+
+fun Point<Int>.adjacents(): Sequence<Point<Int>> =
+    sequence {
+        for (x in -1..1) {
+            for (y in -1..1) {
+                if (x == 0 && y == 0) continue
+                yield(this@adjacents + Point(x to y))
+            }
+        }
+    }
+
+val north = Point(0 to -1)
+val east = Point(1 to 0)
+val south = Point(0 to 1)
+val west = Point(-1 to 0)
