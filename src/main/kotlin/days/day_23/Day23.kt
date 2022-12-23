@@ -32,30 +32,33 @@ fun directions() =
             .map(::direction)
             .toMutableList()
         while (true) {
-            yield(directionsOrdered.toList().asSequence())
-            directionsOrdered.add(directionsOrdered.removeFirst())
+            yield(directionsOrdered.asSequence())
+            directionsOrdered += directionsOrdered.removeFirst()
         }
     }.iterator()
 
-fun performMoves(elves: MutableSet<Point<Int>>, consideredDirections: Sequence<Set<Point<Int>>>) =
-    moves(elves, consideredDirections)
+context(MutableSet<Point<Int>>) fun performMoves(consideredDirections: Sequence<Set<Point<Int>>>) =
+    moves(consideredDirections)
         .takeIf { it.isNotEmpty() }
         ?.forEach { (from, to) ->
-            elves.remove(from)
-            elves.add(to)
+            remove(from)
+            add(to)
         }
 
-private fun moves(elves: Set<Point<Int>>, consideredDirections: Sequence<Set<Point<Int>>>) =
+context(Set<Point<Int>>) private fun moves(consideredDirections: Sequence<Set<Point<Int>>>) =
     buildMap<Point<Int>, MutableSet<Point<Int>>> {
-        for (elf in elves) {
-            consideredDirections
-                .takeIf { elf.adjacents().toSet().intersect(elves).isNotEmpty() }
-                ?.firstOrNull { dirs -> dirs.map { elf + it }.intersect(elves).isEmpty() }
-                ?.first { it.x == 0 || it.y == 0 }
-                ?.let { elf + it }
-                ?.let { this[it] = this.getOrDefault(it, mutableSetOf()).apply { add(elf) } }
+        for (elf in this@Set) {
+            moveForElf(elf, consideredDirections)
+                ?.let { to -> this[to] = this.getOrDefault(to, mutableSetOf()).apply { this += elf } }
         }
     }
         .filterValues { it.size == 1 }
         .mapValues { it.value.first() }
         .map { (to, from) -> from to to }
+
+context(Set<Point<Int>>) private fun moveForElf(elf: Point<Int>, consideredDirections: Sequence<Set<Point<Int>>>) =
+    consideredDirections
+        .takeIf { elf.adjacents().toSet().intersect(this@Set).isNotEmpty() }
+        ?.firstOrNull { dirs -> dirs.map { elf + it }.intersect(this@Set).isEmpty() }
+        ?.first { it.x == 0 || it.y == 0 }
+        ?.let { elf + it }

@@ -11,7 +11,7 @@ class Day23_1 : Solver<Sequence<String>, Int> {
 
             val directions = directions()
 
-            repeat(10) { performMoves(this, directions.next()) }
+            repeat(10) { performMoves(directions.next()) }
 
             edgeLength { it.x } * edgeLength { it.y } - count()
         }
