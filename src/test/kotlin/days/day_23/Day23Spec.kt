@@ -11,7 +11,7 @@ class Day23Spec : FreeSpec({
     }
 
     "Part 2" {
-        Day23_2().solve(lines(23)) shouldBe 3762
+        Day23_2().solve(lines(23)) shouldBe 997
     }
 
 })
