@@ -46,17 +46,14 @@ context(MutableSet<Point<Int>>) fun performMoves(consideredDirections: Sequence<
         }
 
 context(Set<Point<Int>>) private fun moves(consideredDirections: Sequence<Set<Point<Int>>>) =
-    buildMap<Point<Int>, MutableSet<Point<Int>>> {
-        for (elf in this@Set) {
-            moveForElf(elf, consideredDirections)
-                ?.let { to -> this[to] = this.getOrDefault(to, mutableSetOf()).apply { this += elf } }
-        }
-    }
-        .filterValues { it.size == 1 }
-        .mapValues { it.value.first() }
-        .map { (to, from) -> from to to }
+    asSequence()
+        .mapNotNull { elf -> move(elf, consideredDirections)?.let { to -> elf to to } }
+        .groupBy { it.second }
+        .map { it.value }
+        .filter { it.size == 1 }
+        .associate { it.first() }
 
-context(Set<Point<Int>>) private fun moveForElf(elf: Point<Int>, consideredDirections: Sequence<Set<Point<Int>>>) =
+context(Set<Point<Int>>) private fun move(elf: Point<Int>, consideredDirections: Sequence<Set<Point<Int>>>) =
     consideredDirections
         .takeIf { elf.adjacents().toSet().intersect(this@Set).isNotEmpty() }
         ?.firstOrNull { dirs -> dirs.map { elf + it }.intersect(this@Set).isEmpty() }
