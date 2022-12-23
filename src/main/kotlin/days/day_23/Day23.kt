@@ -45,7 +45,7 @@ fun performMoves(elves: MutableSet<Point<Int>>, consideredDirections: Sequence<S
             elves.add(to)
         }
 
-fun moves(elves: Set<Point<Int>>, consideredDirections: Sequence<Set<Point<Int>>>) =
+private fun moves(elves: Set<Point<Int>>, consideredDirections: Sequence<Set<Point<Int>>>) =
     buildMap<Point<Int>, MutableSet<Point<Int>>> {
         for (elf in elves) {
             consideredDirections

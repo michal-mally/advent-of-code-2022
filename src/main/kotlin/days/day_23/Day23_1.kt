@@ -4,16 +4,16 @@ import util.Solver
 import util.point.Point
 
 class Day23_1 : Solver<Sequence<String>, Int> {
-    override fun solve(input: Sequence<String>): Int {
-        val elves = elves(input)
-        val directions = directions()
+    override fun solve(input: Sequence<String>) =
+        with(elves(input)) {
+            fun edgeLength(f: (Point<Int>) -> Int) =
+                maxOf(f) - minOf(f) + 1
 
-        repeat(10) { performMoves(elves, directions.next()) }
+            val directions = directions()
 
-        fun edgeLength(f: (Point<Int>) -> Int) =
-            elves.maxOf(f) - elves.minOf(f) + 1
+            repeat(10) { performMoves(this, directions.next()) }
 
-        return edgeLength { it.x } * edgeLength { it.y } - elves.count()
-    }
+            edgeLength { it.x } * edgeLength { it.y } - count()
+        }
 
 }
