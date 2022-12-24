@@ -7,7 +7,11 @@ import util.file.lines
 class Day24Spec : FreeSpec({
 
     "Part 1" {
-        Day24_1().solve(lines(24)) shouldBe 3762
+        Day24_1().solve(lines(24)) shouldBe 225
+    }
+
+    "Part 2" {
+        Day24_2().solve(lines(24)) shouldBe 711
     }
 
 })
