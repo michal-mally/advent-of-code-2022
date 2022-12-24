@@ -1,5 +1,6 @@
 package util.point
 
+import kotlin.math.abs
 import kotlin.math.sign
 
 @JvmInline
@@ -34,3 +35,6 @@ val north = Point(0 to -1)
 val east = Point(1 to 0)
 val south = Point(0 to 1)
 val west = Point(-1 to 0)
+
+infix fun Point<Int>.manhattanDistanceTo(other: Point<Int>): Int =
+    abs(x - other.x) + abs(y - other.y)
