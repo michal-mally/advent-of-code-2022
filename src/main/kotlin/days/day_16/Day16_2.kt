@@ -3,6 +3,9 @@ package days.day_16
 import util.Solver
 import util.graph.Edge
 import util.graph.Graph
+import util.list.cartesianProduct
+import util.pair.map
+import util.pair.toPair
 
 class Day16_2 : Solver<Sequence<String>, Int> {
 
@@ -15,12 +18,7 @@ class Day16_2 : Solver<Sequence<String>, Int> {
             return if (toValve > 0) {
                 listOf(copy(toValve = toValve - 1))
             } else {
-                val shouldOpen =
-                    if (valve !in alreadyOpened && valves.find { it.name == valve }!!.flowRate > 0)
-                        listOf(null)
-                    else
-                        emptyList()
-                shouldOpen + valvesToOpen()
+                listOf(null) + valvesToOpen()
                     .filterNot { it.name == valve }
                     .map { to -> PlayerPosition(to.name, distances[valve to to.name]!! - 1) }
             }
@@ -29,7 +27,7 @@ class Day16_2 : Solver<Sequence<String>, Int> {
 
     private data class StepInput(
         val minutesLeft: Int,
-        val players: Set<PlayerPosition>,
+        val players: List<PlayerPosition>,
         val alreadyOpened: Set<String> = emptySet(),
     )
 
@@ -71,7 +69,7 @@ class Day16_2 : Solver<Sequence<String>, Int> {
                 mutableMapOf()
             )
         ) {
-            best(StepInput(30, setOf(PlayerPosition("AA"))))
+            best(StepInput(26, listOf(PlayerPosition("AA"), PlayerPosition("AA"))))
         }
     }
 
@@ -89,25 +87,41 @@ class Day16_2 : Solver<Sequence<String>, Int> {
         val accumulated = stepInput.alreadyOpened.sumOf { opened -> valves.find { it.name == opened }!!.flowRate }
         return (accumulated + with(stepInput) {
             players
-                .first()
-                .possibleMoves()
-                .maxOfOrNull { move ->
-                    if (move == null) {
-                        if (players.first().valve !in alreadyOpened) {
-                            best(
-                                copy(
-                                    alreadyOpened = alreadyOpened + players.first().valve,
-                                    minutesLeft = minutesLeft - 1
-                                )
-                            )
-                        } else {
-                            best(copy(minutesLeft = minutesLeft - 1))
-                        }
-                    } else {
-                        best(copy(players = setOf(move), minutesLeft = minutesLeft - 1))
+                .map { it.possibleMoves() }
+                .toPair()
+                .map { first, second -> first cartesianProduct second }
+                .maxOf { (first, second) ->
+                    val newPlayerPositions = mutableListOf<PlayerPosition>()
+                    val newAlreadyOpened = alreadyOpened.toMutableSet()
+
+                    if (first == null) {
+                        newAlreadyOpened += players.first().valve
                     }
+
+                    if (first != null) {
+                        newPlayerPositions.add(first)
+                    } else {
+                        newPlayerPositions.add(players.first())
+                    }
+
+                    if (second == null) {
+                        newAlreadyOpened += players.last().valve
+                    }
+
+                    if (second != null) {
+                        newPlayerPositions.add(second)
+                    } else {
+                        newPlayerPositions.add(players.last())
+                    }
+
+                    best(
+                        stepInput.copy(
+                            minutesLeft = minutesLeft - 1,
+                            players = newPlayerPositions,
+                            alreadyOpened = newAlreadyOpened,
+                        )
+                    )
                 }
-                ?: best(copy(minutesLeft = minutesLeft - 1))
         }).also { cache[stepInput] = it }
     }
 
