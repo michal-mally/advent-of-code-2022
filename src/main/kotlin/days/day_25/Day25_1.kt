@@ -3,18 +3,11 @@ package days.day_25
 import util.Solver
 
 class Day25_1 : Solver<Sequence<String>, String> {
-    override fun solve(input: Sequence<String>): String {
-        println(1L.toSNAFU())
-        println(2L.toSNAFU())
-        println(3L.toSNAFU())
-        println(4L.toSNAFU())
-        println(5L.toSNAFU())
-        println(314159265L.toSNAFU())
 
-        return input
+    override fun solve(input: Sequence<String>) =
+        input
             .sumOf { it.fromSNAFU() }
             .toSNAFU()
-    }
 
     private fun String.fromSNAFU() =
         toList()
