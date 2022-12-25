@@ -3,9 +3,6 @@ package days.day_16
 import util.Solver
 import util.graph.Edge
 import util.graph.Graph
-
-private val regex = """Valve ([A-Z]+) has flow rate=(\d+); tunnels? leads? to valves? ([A-Z]+(, [A-Z]+)*)""".toRegex()
-
 class Day16_1 : Solver<Sequence<String>, Int> {
     override fun solve(input: Sequence<String>): Int {
         val valves = input.map { valve(it) }.toList()
@@ -86,5 +83,7 @@ class Day16_1 : Solver<Sequence<String>, Int> {
             .let { (name, flowRate, tunnels) -> Valve(name, flowRate.toInt(), tunnels.split(", ")) }
 
     private data class Valve(val name: String, val flowRate: Int, val tunnels: List<String>)
+
+    private val regex = """Valve ([A-Z]+) has flow rate=(\d+); tunnels? leads? to valves? ([A-Z]+(, [A-Z]+)*)""".toRegex()
 
 }
