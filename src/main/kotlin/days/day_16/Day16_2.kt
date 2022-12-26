@@ -61,27 +61,65 @@ class Day16_2 : Solver<Sequence<String>, Int> {
             }
             .associate { it }
 
-        return with(
-            Context(
-                valves,
-                distances,
-                0,
-                mutableMapOf()
-            )
-        ) {
+        val receiver = Context(
+            valves,
+            distances,
+            0,
+            mutableMapOf()
+        )
+        Thread {
+            while (true) {
+                Thread.sleep(5000)
+                println(receiver.currentMax)
+            }
+        }.apply { isDaemon = true }.start()
+
+        return with(receiver) {
             best(StepInput(26, listOf(PlayerPosition("AA"), PlayerPosition("AA"))))
         }
     }
 
-    context(Context) private fun best(stepInput: StepInput): Int {
+    context(Context) private fun best(stepInput: StepInput, alreadyAccumulated: Int = 0): Int {
         if (stepInput.minutesLeft == 0) {
             return 0
         }
 
-        if (stepInput in cache) {
-            return cache[stepInput]!!
+//        if (stepInput in cache) {
+//            return cache[stepInput]!!
+//        }
+
+        fun potentialLeft(): Int {
+            val toList = valves
+                .asSequence()
+                .filter { it.flowRate > 0 }
+                .filterNot { it.name in stepInput.alreadyOpened }
+                .map { it.flowRate }
+                .sortedDescending()
+                .chunked(2)
+                .map { it.sum() }
+                .toList()
+
+            var potential = 0
+            for (i in 1..stepInput.minutesLeft step 2) {
+                potential += (stepInput.minutesLeft - i) * toList.getOrElse(i / 2) { 0 }
+            }
+
+            return potential
         }
 
+        val maxPotential = alreadyAccumulated +
+                valves
+                    .filter { it.name in stepInput.alreadyOpened }
+                    .sumOf { it.flowRate * stepInput.minutesLeft } +
+                potentialLeft()
+
+        if (maxPotential <= currentMax) {
+            return 0
+        }
+
+        // accumulated
+        // + already open * minutes left
+        // + not open sorted by flow rate (chunked by 2)
         // if currentMax is much higher than accumulated, we can stop
 
         val accumulated = stepInput.alreadyOpened.sumOf { opened -> valves.find { it.name == opened }!!.flowRate }
@@ -117,12 +155,16 @@ class Day16_2 : Solver<Sequence<String>, Int> {
                     best(
                         stepInput.copy(
                             minutesLeft = minutesLeft - 1,
-                            players = newPlayerPositions,
+                            players = newPlayerPositions.sortedBy { it.valve },
                             alreadyOpened = newAlreadyOpened,
-                        )
+                        ),
+                        alreadyAccumulated + accumulated
                     )
                 }
-        }).also { cache[stepInput] = it }
+        }).also {
+            //cache[stepInput] = it
+            currentMax = maxOf(currentMax, it)
+        }
     }
 
 
