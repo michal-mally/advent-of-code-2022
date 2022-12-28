@@ -14,11 +14,12 @@ import util.point.plus
 import util.sequence.splitBy
 import util.sequence.transpose
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 class Day22_2 : Solver<Sequence<String>, Int> {
 
-    private val sideSize = 4
+    private val sideSize = 50
     override fun solve(input: Sequence<String>): Int {
         val (map, instructionsRaw) = input
             .splitBy { it.isBlank() }
@@ -33,7 +34,7 @@ class Day22_2 : Solver<Sequence<String>, Int> {
             .toMap()
             .let(::Sides)
 
-        println(sides.sides[Point(2 to 0)])
+        //println(sides.sides[Point(1 to 0)])
 
         val connections = buildSideConnections(sides)
 
@@ -72,7 +73,8 @@ class Day22_2 : Solver<Sequence<String>, Int> {
                             connections[locationAndDirection.side.location]!![locationAndDirection.direction]!!
                         var newPoint =
                             Point((forward.location.x nonNegativeModulo sideSize) to (forward.location.y nonNegativeModulo sideSize))
-                        newPoint = newPoint.rotate(sideConnection.clockwiseRotation)
+                        newPoint = newPoint.rotate(-sideConnection.clockwiseRotation)
+                        check(newPoint == newPoint.rotate(4)) { "newPoint: $newPoint ${newPoint.rotate(4)}" }
                         val newDirection =
                             locationAndDirection.direction.rotateClockwise(-sideConnection.clockwiseRotation)
                         forward = LocationAndDirection(sides.sides[sideConnection.side]!!, newPoint, newDirection)
@@ -93,17 +95,20 @@ class Day22_2 : Solver<Sequence<String>, Int> {
         return 1000 * (locationAndDirection.location.y + locationAndDirection.side.location.y * sideSize + 1) + 4 * (locationAndDirection.location.x + locationAndDirection.side.location.x * sideSize + 1) + locationAndDirection.direction.ordinal
     }
 
-    private fun Point<Int>.rotate(rotation: Int) =
-        (x.toDouble() - 1.5 to -y.toDouble() + 1.5)
+    private fun Point<Int>.rotate(rotation: Int): Point<Int> {
+        val d = (sideSize - 1) / 2.0
+        return (x.toDouble() - d to -y.toDouble() + d)
             .let { (x, y) ->
-                val sin = sin(Math.PI * rotation * 90 / 360 * 2)
-                val cos = cos(Math.PI * rotation * 90 / 360 * 2)
+                val sin = sin(-(rotation.toDouble() / 2) * Math.PI)
+                val cos = cos(-(rotation.toDouble() / 2) * Math.PI)
 
                 val newX = x * cos - y * sin
                 val newY = x * sin + y * cos
 
-                Point((newX + 1.5).toInt() to (-newY + 1.5).toInt())
+                println(newX to newY)
+                Point((newX + d).roundToInt() to (-newY + d).roundToInt())
             }.also { println("$this $rotation -> $it") }
+    }
 
     private data class LocationAndDirection(val side: Side, val location: Point<Int>, val direction: Direction) {
 
