@@ -29,8 +29,8 @@ class Day08_1 : Solver<Sequence<String>, Int> {
 
     private fun Forest.allDirections(): Sequence<Direction> =
         sequenceOf(
-            rowIndices.map { row -> columnIndices.map { Point(row to it) } },
-            columnIndices.map { column -> rowIndices.map { Point(it to column) } }
+            xIndices.map { row -> yIndices.map { Point(row to it) } },
+            yIndices.map { column -> xIndices.map { Point(it to column) } }
         )
             .reduce { acc, sequence -> acc + sequence }
             .flatMap { sequenceOf(it, it.toList().reversed().asSequence()) }

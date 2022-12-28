@@ -43,4 +43,4 @@ private fun TwoDimArray<*>.neighbourPositions(position: Point<Int>) =
         position.x to position.y + 1,
     )
         .map { Point(it) }
-        .filter { it.x in rowIndices && it.y in columnIndices }
+        .filter { it.x in xIndices && it.y in yIndices }
