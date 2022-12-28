@@ -1,11 +1,15 @@
 package days.day_22
 
 import util.point.Point
+import util.point.plus
 
 data class LocationAndDirection(val side: Side, val location: Point<Int>, val direction: Direction) {
 
     val squareAt
         get() = side.values[location]
+
+    fun next() =
+        copy(location = location + direction.point)
 
     fun rotate(clockwiseRotation: Int) =
         copy(direction = direction.rotate(clockwiseRotation))

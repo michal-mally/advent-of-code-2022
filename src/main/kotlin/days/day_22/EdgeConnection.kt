@@ -28,9 +28,6 @@ data class EdgeConnections(private val connections: MutableMap<Direction, EdgeCo
         connections[direction] = value
     }
 
-    val values: Map<Direction, EdgeConnection>
-        get() = connections
-
 }
 
 fun edgeConnections(sides: Map<Point<Int>, Side>): Map<Point<Int>, EdgeConnections> =
@@ -43,18 +40,18 @@ fun edgeConnections(sides: Map<Point<Int>, Side>): Map<Point<Int>, EdgeConnectio
         }
 
         while (values.any { !it.complete }) {
-            for (sideConnections in values) {
-                for (missing in sideConnections.missingConnections()) {
+            for (edgeConnections in values) {
+                for (missing in edgeConnections.missingConnections()) {
                     fun fillConnection(first: Direction, second: Direction, clockwiseRotation: Int) {
-                        if (sideConnections[missing] != null) {
+                        if (edgeConnections[missing] != null) {
                             return
                         }
 
-                        val sideConnection1 = sideConnections[first] ?: return
+                        val sideConnection1 = edgeConnections[first] ?: return
                         val sideConnection2 =
                             this[sideConnection1.side]!![second.rotate(-sideConnection1.clockwiseRotationDegrees)]
                                 ?: return
-                        sideConnections[missing] =
+                        edgeConnections[missing] =
                             sideConnection2.copy(clockwiseRotationDegrees = sideConnection1.clockwiseRotationDegrees + sideConnection2.clockwiseRotationDegrees + clockwiseRotation)
                     }
 
