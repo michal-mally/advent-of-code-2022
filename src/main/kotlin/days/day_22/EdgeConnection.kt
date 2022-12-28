@@ -7,7 +7,9 @@ const val STRAIGHT_ANGLE_DEGREES = 90
 
 data class EdgeConnection(val side: Point<Int>, val clockwiseRotationDegrees: Int = 0) {
     init {
-        require(clockwiseRotationDegrees % 90 == 0) { "Clockwise rotation must be a multiple of 90 degrees" }
+        require(clockwiseRotationDegrees % STRAIGHT_ANGLE_DEGREES == 0) {
+            "Clockwise rotation must be a multiple of 90 degrees"
+        }
     }
 }
 
