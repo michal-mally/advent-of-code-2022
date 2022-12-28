@@ -4,6 +4,7 @@ import days.day_22.Day22_2.Square.Empty
 import days.day_22.Day22_2.Square.Wall
 import util.Solver
 import util.array.TwoDimArray
+import util.point.Point
 import util.sequence.splitBy
 import util.sequence.transpose
 
@@ -18,32 +19,31 @@ class Day22_2 : Solver<Sequence<String>, Int> {
         val sides = map
             .map { it.map { parseSquare(it) }.asSequence() }
             .chunked(sideSize)
-            .flatMapIndexed { y, rows -> parseSides(y, rows)}
-            .toList()
+            .flatMapIndexed { y, rows -> parseSides(y, rows) }
+            .toMap()
+
+        println(sides)
 
         TODO()
     }
 
-    private fun parseSides(y: Int, rows: List<Sequence<Square?>>): Sequence<Side> {
-        return rows
+    private fun parseSides(y: Int, rows: List<Sequence<Square?>>) =
+        rows
             .asSequence()
             .map { it.chunked(sideSize) }
             .transpose()
             .mapIndexedNotNull { x, side -> parseSide(x, y, side) }
-    }
 
-    private fun parseSide(x: Int, y: Int, side: Sequence<List<Square?>>): Side? {
-        println("Side $x $y")
-
-        return side
+    private fun parseSide(x: Int, y: Int, side: Sequence<List<Square?>>) =
+        side
             .takeIf { null !in it.flatMap { it } }
             ?.map { it.map { it!! } }
             ?.toList()
             ?.let { TwoDimArray(it) }
-            ?.also { println(it) }
             ?.let { Side(it) }
-    }
-    private class Side(val values: TwoDimArray<Square>)
+            ?.let { Point(x to y) to it }
+
+    private data class Side(val values: TwoDimArray<Square>)
 
     private fun parseSquare(square: Char) =
         when (square) {
