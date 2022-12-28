@@ -21,6 +21,14 @@ operator fun Point<Int>.minus(point: Point<Int>): Point<Int> =
 fun Point<Int>.sign(): Point<Int> =
     Point(x.sign to y.sign)
 
+fun Point<Int>.neighbours() =
+    sequenceOf(
+        Point(x - 1 to y),
+        Point(x + 1 to y),
+        Point(x to y - 1),
+        Point(x to y + 1),
+    )
+
 fun Point<Int>.adjacents(): Sequence<Point<Int>> =
     sequence {
         for (x in -1..1) {
