@@ -21,4 +21,7 @@ data class TwoDimArray<T>(private val values: List<List<T>>) {
     override fun toString() =
         values.joinToString("\n") { row -> row.toString() }
 
+    operator fun contains(point: Point<Int>) =
+        point.x in xIndices && point.y in yIndices
+
 }
