@@ -9,17 +9,14 @@ import days.day_22.Day22_2.Square.Wall
 import util.Solver
 import util.array.TwoDimArray
 import util.number.nonNegativeModulo
-import util.point.Point
-import util.point.plus
+import util.point.*
 import util.sequence.splitBy
 import util.sequence.transpose
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
 
 class Day22_2 : Solver<Sequence<String>, Int> {
 
     private val sideSize = 50
+
     override fun solve(input: Sequence<String>): Int {
         val (map, instructionsRaw) = input
             .splitBy { it.isBlank() }
@@ -34,19 +31,7 @@ class Day22_2 : Solver<Sequence<String>, Int> {
             .toMap()
             .let(::Sides)
 
-        //println(sides.sides[Point(1 to 0)])
-
         val connections = buildSideConnections(sides)
-
-        connections
-            .forEach { (side, cons) ->
-                println("$side:")
-                cons.values.forEach { (dir, side) ->
-                    println("  $dir -> $side")
-                }
-                println()
-            }
-
         val instructions =
             """\d+|[LR]"""
                 .toRegex()
@@ -55,59 +40,41 @@ class Day22_2 : Solver<Sequence<String>, Int> {
                 .map { parseInstruction(it) }
                 .toList()
 
-        fun nextInDirection(locationAndDirection: LocationAndDirection) {
-            locationAndDirection.location
-        }
-
         var locationAndDirection = LocationAndDirection(sides.startingSide, Point(0 to 0), Right)
         for (instruction in instructions) {
-            println(instruction)
             when (instruction) {
                 is Rotate -> locationAndDirection = locationAndDirection.rotate(instruction.clockwiseRotation)
                 is Forward -> for (i in 0..<instruction.steps) {
                     var forward =
                         locationAndDirection.copy(location = locationAndDirection.location + locationAndDirection.direction.point)
-                    //println("forward: " + forward)
                     if (forward.location !in locationAndDirection.side.values) {
                         val sideConnection =
                             connections[locationAndDirection.side.location]!![locationAndDirection.direction]!!
                         var newPoint =
                             Point((forward.location.x nonNegativeModulo sideSize) to (forward.location.y nonNegativeModulo sideSize))
-                        newPoint = newPoint.rotate(-sideConnection.clockwiseRotation)
-                        check(newPoint == newPoint.rotate(4)) { "newPoint: $newPoint ${newPoint.rotate(4)}" }
+                        newPoint = newPoint
+                            .toDoublePoint()
+                            .let { Point(it.x to -it.y) }
+                            .minus(Point((sideSize - 1) / 2.0 to -(sideSize - 1) / 2.0))
+                            .rotate(-sideConnection.clockwiseRotation.toDouble() * 90)
+                            .plus(Point((sideSize - 1) / 2.0 to -(sideSize - 1) / 2.0))
+                            .let { Point(it.x to -it.y) }
+                            .toIntPoint()
                         val newDirection =
                             locationAndDirection.direction.rotateClockwise(-sideConnection.clockwiseRotation)
                         forward = LocationAndDirection(sides.sides[sideConnection.side]!!, newPoint, newDirection)
                     }
 
                     if (forward.squareAt == Wall) {
-                        println("HERE")
                         break
                     }
 
                     locationAndDirection = forward
                 }
             }
-            println(locationAndDirection.let { "${it.side.location} ${it.location} ${it.direction}" })
-            println()
         }
 
         return 1000 * (locationAndDirection.location.y + locationAndDirection.side.location.y * sideSize + 1) + 4 * (locationAndDirection.location.x + locationAndDirection.side.location.x * sideSize + 1) + locationAndDirection.direction.ordinal
-    }
-
-    private fun Point<Int>.rotate(rotation: Int): Point<Int> {
-        val d = (sideSize - 1) / 2.0
-        return (x.toDouble() - d to -y.toDouble() + d)
-            .let { (x, y) ->
-                val sin = sin(-(rotation.toDouble() / 2) * Math.PI)
-                val cos = cos(-(rotation.toDouble() / 2) * Math.PI)
-
-                val newX = x * cos - y * sin
-                val newY = x * sin + y * cos
-
-                println(newX to newY)
-                Point((newX + d).roundToInt() to (-newY + d).roundToInt())
-            }.also { println("$this $rotation -> $it") }
     }
 
     private data class LocationAndDirection(val side: Side, val location: Point<Int>, val direction: Direction) {
@@ -117,16 +84,6 @@ class Day22_2 : Solver<Sequence<String>, Int> {
 
         fun rotate(clockwiseRotation: Int) =
             copy(direction = direction.rotateClockwise(clockwiseRotation))
-
-        fun moveForward(): LocationAndDirection? {
-            val nextInDirection = copy(location = location + direction.point)
-            println("considered:" + nextInDirection.location)
-            if (nextInDirection.location !in side.values) {
-                return null
-            }
-
-            return nextInDirection
-        }
 
     }
 
