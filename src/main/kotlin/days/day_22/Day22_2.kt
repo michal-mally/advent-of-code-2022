@@ -1,11 +1,9 @@
 package days.day_22
 
-import days.day_22.Day22_2.Direction.Right
-import days.day_22.Day22_2.Direction.values
 import days.day_22.Day22_2.Instruction.Forward
 import days.day_22.Day22_2.Instruction.Rotate
-import days.day_22.Day22_2.Square.Empty
-import days.day_22.Day22_2.Square.Wall
+import days.day_22.Direction.Right
+import days.day_22.Square.Wall
 import util.Solver
 import util.array.TwoDimArray
 import util.number.nonNegativeModulo
@@ -17,28 +15,16 @@ class Day22_2 : Solver<Sequence<String>, Int> {
 
     private val sideSize = 50
 
+    private val sideCenter = Point((sideSize - 1) / 2.0 to (sideSize - 1) / 2.0)
+
     override fun solve(input: Sequence<String>): Int {
         val (map, instructionsRaw) = input
             .splitBy { it.isBlank() }
             .toList()
 
-        val sides = map
-            .map { it.map(::parseSquare) }
-            .map { it.asSequence() }
-            .chunked(sideSize)
-            .flatMapIndexed { y, rows -> parseSides(y, rows) }
-            .associateBy { it.location }
-            .toMap()
-            .let(::Sides)
-
-        val connections = buildSideConnections(sides)
-        val instructions =
-            """\d+|[LR]"""
-                .toRegex()
-                .findAll(instructionsRaw.first())
-                .map { it.value }
-                .map { parseInstruction(it) }
-                .toList()
+        val sides = sides(map)
+        val edgeConnections = edgeConnections(sides)
+        val instructions = instructions(instructionsRaw)
 
         var locationAndDirection = LocationAndDirection(sides.startingSide, Point(0 to 0), Right)
         for (instruction in instructions) {
@@ -49,19 +35,17 @@ class Day22_2 : Solver<Sequence<String>, Int> {
                         locationAndDirection.copy(location = locationAndDirection.location + locationAndDirection.direction.point)
                     if (forward.location !in locationAndDirection.side.values) {
                         val sideConnection =
-                            connections[locationAndDirection.side.location]!![locationAndDirection.direction]!!
+                            edgeConnections[locationAndDirection.side.location]!![locationAndDirection.direction]!!
                         var newPoint =
                             Point((forward.location.x nonNegativeModulo sideSize) to (forward.location.y nonNegativeModulo sideSize))
                         newPoint = newPoint
+                            .invertY()
                             .toDoublePoint()
-                            .let { Point(it.x to -it.y) }
-                            .minus(Point((sideSize - 1) / 2.0 to -(sideSize - 1) / 2.0))
-                            .rotate(-sideConnection.clockwiseRotation.toDouble() * 90)
-                            .plus(Point((sideSize - 1) / 2.0 to -(sideSize - 1) / 2.0))
-                            .let { Point(it.x to -it.y) }
+                            .rotate(-sideConnection.clockwiseRotationDegrees.toDouble(), sideCenter)
                             .toIntPoint()
+                            .invertY()
                         val newDirection =
-                            locationAndDirection.direction.rotateClockwise(-sideConnection.clockwiseRotation)
+                            locationAndDirection.direction.rotate(-sideConnection.clockwiseRotationDegrees)
                         forward = LocationAndDirection(sides.sides[sideConnection.side]!!, newPoint, newDirection)
                     }
 
@@ -77,20 +61,41 @@ class Day22_2 : Solver<Sequence<String>, Int> {
         return 1000 * (locationAndDirection.location.y + locationAndDirection.side.location.y * sideSize + 1) + 4 * (locationAndDirection.location.x + locationAndDirection.side.location.x * sideSize + 1) + locationAndDirection.direction.ordinal
     }
 
+    private fun instructions(instructionsRaw: Sequence<String>) =
+        """\d+|[LR]"""
+            .toRegex()
+            .findAll(instructionsRaw.first())
+            .map { it.value }
+            .map { parseInstruction(it) }
+            .toList()
+
+    private fun sides(map: Sequence<String>) =
+        map
+            .map { it.map(::Square) }
+            .map { it.asSequence() }
+            .chunked(sideSize)
+            .flatMapIndexed { y, rows -> sides(y, rows) }
+            .associateBy { it.location }
+            .toMap()
+            .let(::Sides)
+
+    private fun Point<Int>.invertY() =
+        Point(x to -y + sideSize - 1)
+
     private data class LocationAndDirection(val side: Side, val location: Point<Int>, val direction: Direction) {
 
         val squareAt
             get() = side.values[location]
 
         fun rotate(clockwiseRotation: Int) =
-            copy(direction = direction.rotateClockwise(clockwiseRotation))
+            copy(direction = direction.rotate(clockwiseRotation))
 
     }
 
     fun parseInstruction(instruction: String) =
         when (instruction) {
-            "L" -> Rotate(-1)
-            "R" -> Rotate(1)
+            "L" -> Rotate(-STRAIGHT_ANGLE_DEGREES)
+            "R" -> Rotate(STRAIGHT_ANGLE_DEGREES)
             else -> Forward(instruction.toInt())
         }
 
@@ -99,12 +104,12 @@ class Day22_2 : Solver<Sequence<String>, Int> {
         data class Forward(val steps: Int) : Instruction
     }
 
-    private fun buildSideConnections(sides: Sides): Map<Point<Int>, SideConnections> =
+    private fun edgeConnections(sides: Sides): Map<Point<Int>, EdgeConnections> =
         buildMap {
             for (side in sides.sides.values) {
-                for (direction in values()) {
+                for (direction in Direction.values()) {
                     val neighbour = sides.sides[side.location + direction.point] ?: continue
-                    getOrPut(side.location) { SideConnections() }[direction] = SideConnection(neighbour.location)
+                    getOrPut(side.location) { EdgeConnections() }[direction] = EdgeConnection(neighbour.location)
                 }
             }
 
@@ -118,21 +123,21 @@ class Day22_2 : Solver<Sequence<String>, Int> {
 
                             val sideConnection1 = sideConnections[first] ?: return
                             val sideConnection2 =
-                                this[sideConnection1.side]!![second.rotateClockwise(-sideConnection1.clockwiseRotation)]
+                                this[sideConnection1.side]!![second.rotate(-sideConnection1.clockwiseRotationDegrees)]
                                     ?: return
                             sideConnections[missing] =
-                                sideConnection2.copy(clockwiseRotation = sideConnection1.clockwiseRotation + sideConnection2.clockwiseRotation + clockwiseRotation)
+                                sideConnection2.copy(clockwiseRotationDegrees = sideConnection1.clockwiseRotationDegrees + sideConnection2.clockwiseRotationDegrees + clockwiseRotation)
                         }
 
-                        for (rotation in listOf(-1, 1)) {
-                            fillConnection(missing.rotateClockwise(-rotation), missing, rotation)
+                        for (rotation in listOf(-STRAIGHT_ANGLE_DEGREES, STRAIGHT_ANGLE_DEGREES)) {
+                            fillConnection(missing.rotate(-rotation), missing, rotation)
                         }
                     }
                 }
             }
         }
 
-    private fun parseSides(y: Int, rows: List<Sequence<Square?>>) =
+    private fun sides(y: Int, rows: List<Sequence<Square?>>) =
         rows
             .asSequence()
             .map { it.chunked(sideSize) }
@@ -159,19 +164,7 @@ class Day22_2 : Solver<Sequence<String>, Int> {
 
     private data class Side(val location: Point<Int>, val values: TwoDimArray<Square>)
 
-    private enum class Direction(val point: Point<Int>) {
-        Right(Point(1 to 0)),
-        Down(Point(0 to 1)),
-        Left(Point(-1 to 0)),
-        Up(Point(0 to -1)),
-        ;
-
-        fun rotateClockwise(times: Int) = values()[(ordinal + times) nonNegativeModulo values().size]
-    }
-
-    private data class SideConnections(
-        private val connections: MutableMap<Direction, SideConnection> = mutableMapOf(),
-    ) {
+    data class EdgeConnections(private val connections: MutableMap<Direction, EdgeConnection> = mutableMapOf()) {
         val complete
             get() = connections.size == 4
 
@@ -184,28 +177,13 @@ class Day22_2 : Solver<Sequence<String>, Int> {
         operator fun get(direction: Direction) =
             connections[direction]
 
-        operator fun set(direction: Direction, value: SideConnection) {
+        operator fun set(direction: Direction, value: EdgeConnection) {
             connections[direction] = value
         }
 
-        val values: Map<Direction, SideConnection>
+        val values: Map<Direction, EdgeConnection>
             get() = connections
 
-    }
-
-    private data class SideConnection(val side: Point<Int>, val clockwiseRotation: Int = 0)
-
-    private fun parseSquare(square: Char) =
-        when (square) {
-            ' ' -> null
-            '#' -> Wall
-            '.' -> Empty
-            else -> throw IllegalArgumentException("Invalid square: $square")
-        }
-
-    private enum class Square {
-        Wall,
-        Empty
     }
 
 }

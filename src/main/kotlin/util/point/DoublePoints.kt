@@ -5,13 +5,16 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-fun Point<Double>.rotate(degreesClockwise: Double): Point<Double> {
-    val radians = toRadians(-degreesClockwise)
-    val cos = cos(radians)
-    val sin = sin(radians)
+fun Point<Double>.rotate(degreesClockwise: Double, around: Point<Double> = Point(0.0 to 0.0)): Point<Double> =
+    minus(around)
+        .let { (x, y) ->
+            val radians = toRadians(-degreesClockwise)
+            val cos = cos(radians)
+            val sin = sin(radians)
 
-    return Point(x * cos - y * sin to x * sin + y * cos)
-}
+            Point(x * cos - y * sin to x * sin + y * cos)
+        }
+        .plus(around)
 
 fun Point<Double>.toIntPoint(): Point<Int> =
     Point(x.roundToInt() to y.roundToInt())
