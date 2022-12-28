@@ -23,7 +23,6 @@ fun Square(square: Char) =
 
 enum class Square { Wall, Empty }
 
-
 enum class Direction(val point: Point<Int>) {
     Right(Point(1 to 0)),
     Down(Point(0 to 1)),

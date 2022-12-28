@@ -25,7 +25,25 @@ class Day22_2 : Solver<Sequence<String>, Int> {
         val sides = sides(map)
         val edgeConnections = edgeConnections(sides)
         val instructions = instructions(instructionsRaw)
+        val endLocation = simulate(sides, instructions, edgeConnections)
 
+        return locationScore(endLocation)
+    }
+
+    private fun locationScore(location: LocationAndDirection) =
+        location
+            .universalLocation
+            .plus(Point(1 to 1))
+            .times(Point(4 to 1_000))
+            .toList()
+            .sum()
+            .plus(location.direction.ordinal)
+
+    private fun simulate(
+        sides: Sides,
+        instructions: List<Instruction>,
+        edgeConnections: Map<Point<Int>, EdgeConnections>
+    ): LocationAndDirection {
         var locationAndDirection = LocationAndDirection(sides.startingSide, Point(0 to 0), Right)
         for (instruction in instructions) {
             when (instruction) {
@@ -58,7 +76,7 @@ class Day22_2 : Solver<Sequence<String>, Int> {
             }
         }
 
-        return 1000 * (locationAndDirection.location.y + locationAndDirection.side.location.y * sideSize + 1) + 4 * (locationAndDirection.location.x + locationAndDirection.side.location.x * sideSize + 1) + locationAndDirection.direction.ordinal
+        return locationAndDirection
     }
 
     private fun instructions(instructionsRaw: Sequence<String>) =
@@ -90,6 +108,9 @@ class Day22_2 : Solver<Sequence<String>, Int> {
         fun rotate(clockwiseRotation: Int) =
             copy(direction = direction.rotate(clockwiseRotation))
 
+        val universalLocation
+            get() = Point(location.x + side.location.x * side.size to location.y + side.location.y * side.size)
+
     }
 
     fun parseInstruction(instruction: String) =
@@ -115,7 +136,7 @@ class Day22_2 : Solver<Sequence<String>, Int> {
 
             while (values.any { !it.complete }) {
                 for (sideConnections in values) {
-                    for (missing in sideConnections.incomplete()) {
+                    for (missing in sideConnections.missingConnections()) {
                         fun fillConnection(first: Direction, second: Direction, clockwiseRotation: Int) {
                             if (sideConnections[missing] != null) {
                                 return
@@ -162,13 +183,15 @@ class Day22_2 : Solver<Sequence<String>, Int> {
                 .minBy { it.location.x }
     }
 
-    private data class Side(val location: Point<Int>, val values: TwoDimArray<Square>)
+    private data class Side(val location: Point<Int>, val values: TwoDimArray<Square>) {
+        val size = values.xCount
+    }
 
     data class EdgeConnections(private val connections: MutableMap<Direction, EdgeConnection> = mutableMapOf()) {
         val complete
             get() = connections.size == 4
 
-        fun incomplete() =
+        fun missingConnections() =
             Direction
                 .values()
                 .filter { it !in connections }
