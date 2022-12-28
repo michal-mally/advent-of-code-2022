@@ -18,4 +18,7 @@ data class TwoDimArray<T>(private val values: List<List<T>>) {
     fun allPositions(): Sequence<Point<Int>> =
         xIndices.flatMap { row -> yIndices.map { Point(row to it) } }
 
+    override fun toString() =
+        values.joinToString("\n") { row -> row.toString() }
+
 }

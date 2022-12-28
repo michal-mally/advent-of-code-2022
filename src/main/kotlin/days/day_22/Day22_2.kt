@@ -34,15 +34,13 @@ class Day22_2 : Solver<Sequence<String>, Int> {
 
     private fun parseSide(x: Int, y: Int, side: Sequence<List<Square?>>): Side? {
         println("Side $x $y")
-        side
-            .forEach { println(it) }
-        println()
 
         return side
             .takeIf { null !in it.flatMap { it } }
             ?.map { it.map { it!! } }
             ?.toList()
             ?.let { TwoDimArray(it) }
+            ?.also { println(it) }
             ?.let { Side(it) }
     }
     private class Side(val values: TwoDimArray<Square>)
