@@ -11,8 +11,8 @@ data class LocationAndDirection(val side: Side, val location: Point<Int>, val di
     fun next() =
         copy(location = location + direction.point)
 
-    fun rotate(clockwiseRotation: Int) =
-        copy(direction = direction.rotate(clockwiseRotation))
+    fun rotate(clockwiseRotationDegrees: Int) =
+        copy(direction = direction.rotate(clockwiseRotationDegrees))
 
     val universalLocation
         get() = Point(location.x + side.location.x * side.size to location.y + side.location.y * side.size)
