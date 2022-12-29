@@ -55,7 +55,7 @@ class Day22_1 : Solver<Sequence<String>, Int> {
                     }
 
                     position = nextInDirection
-                    visited[position] = when(direction) {
+                    visited[position] = when (direction) {
                         Point(1 to 0) -> '>'
                         Point(0 to 1) -> 'v'
                         Point(-1 to 0) -> '<'
