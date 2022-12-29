@@ -3,11 +3,7 @@ package days.day_22
 import days.day_22.Instruction.Forward
 import days.day_22.Instruction.Rotate
 import days.day_22.Square.Wall
-import util.number.nonNegativeModulo
-import util.point.Point
-import util.point.rotate
-import util.point.toDoublePoint
-import util.point.toIntPoint
+import util.point.*
 
 class Game(sides: List<Side>) {
 
@@ -37,37 +33,36 @@ class Game(sides: List<Side>) {
             return next
         }
 
-        val edgeConnection = edgeConnections[current.side.location]!![current.direction]!!
+        val edgeConnection = edgeConnections.getValue(current.side.location)[current.direction]
+            ?: error("No edge connection for side ${current.side.location} and direction ${current.direction}")
 
         return LocationAndDirection(
-            sides[edgeConnection.side]!!,
-            next
+            side = sides.getValue(edgeConnection.side),
+            location = next
                 .location
-                .let { (x, y) -> (x nonNegativeModulo sideSize) to (y nonNegativeModulo sideSize) }
-                .let { Point(it) }
+                .let { it nonNegativeModulo Point(sideSize to sideSize) }
                 .rotate(-edgeConnection.clockwiseRotationDegrees),
-            current.direction.rotate(-edgeConnection.clockwiseRotationDegrees)
+            direction = current
+                .direction
+                .rotate(-edgeConnection.clockwiseRotationDegrees)
         )
     }
 
-    private fun startingLocationAndDirection(): LocationAndDirection {
-        fun startingSide() =
-            sides
-                .values
-                .filter { it.location.y == 0 }
-                .minBy { it.location.x }
+    private fun startingLocationAndDirection() =
+        sides
+            .values
+            .filter { it.location.y == 0 }
+            .minBy { it.location.x }
+            .let { LocationAndDirection(it, Point(0 to 0), Direction.Right) }
 
-        return LocationAndDirection(startingSide(), Point(0 to 0), Direction.Right)
-    }
+    private fun Point<Int>.rotate(clockwiseRotationDegrees: Int): Point<Int> {
+        fun Point<Int>.invertY() = Point(x to -y + sideSize - 1)
 
-    private fun Point<Int>.rotate(clockwiseRotationDegrees: Int) =
-        invertY()
+        return invertY()
             .toDoublePoint()
             .rotate(clockwiseRotationDegrees.toDouble(), sideCenter)
             .toIntPoint()
             .invertY()
-
-    private fun Point<Int>.invertY() =
-        Point(x to -y + sideSize - 1)
+    }
 
 }

@@ -44,21 +44,34 @@ fun edgeConnections(sides: Map<Point<Int>, Side>): Map<Point<Int>, EdgeConnectio
         while (values.any { !it.complete }) {
             for (edgeConnections in values) {
                 for (missing in edgeConnections.missingConnections()) {
-                    fun fillConnection(first: Direction, second: Direction, clockwiseRotation: Int) {
+                    fun fillMissingEdgeConnection(
+                        immediateDirection: Direction,
+                        transitiveDirection: Direction,
+                        clockwiseRotationDegrees: Int,
+                    ) {
                         if (edgeConnections[missing] != null) {
                             return
                         }
 
-                        val sideConnection1 = edgeConnections[first] ?: return
-                        val sideConnection2 =
-                            this[sideConnection1.side]!![second.rotate(-sideConnection1.clockwiseRotationDegrees)]
-                                ?: return
-                        edgeConnections[missing] =
-                            sideConnection2.copy(clockwiseRotationDegrees = sideConnection1.clockwiseRotationDegrees + sideConnection2.clockwiseRotationDegrees + clockwiseRotation)
+                        val immediateConnection = edgeConnections[immediateDirection] ?: return
+                        val transitiveConnection = immediateConnection
+                            .side
+                            .let(::getValue)[transitiveDirection.rotate(-immediateConnection.clockwiseRotationDegrees)]
+                            ?: return
+
+                        edgeConnections[missing] = immediateConnection
+                            .clockwiseRotationDegrees
+                            .plus(transitiveConnection.clockwiseRotationDegrees)
+                            .plus(clockwiseRotationDegrees)
+                            .let { transitiveConnection.copy(clockwiseRotationDegrees = it) }
                     }
 
-                    for (rotation in listOf(-STRAIGHT_ANGLE_DEGREES, STRAIGHT_ANGLE_DEGREES)) {
-                        fillConnection(missing.rotate(-rotation), missing, rotation)
+                    for (clockwiseRotationDegrees in listOf(-STRAIGHT_ANGLE_DEGREES, STRAIGHT_ANGLE_DEGREES)) {
+                        fillMissingEdgeConnection(
+                            missing.rotate(-clockwiseRotationDegrees),
+                            missing,
+                            clockwiseRotationDegrees
+                        )
                     }
                 }
             }

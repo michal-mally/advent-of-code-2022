@@ -1,5 +1,6 @@
 package util.point
 
+import util.number.nonNegativeModulo
 import kotlin.math.abs
 import kotlin.math.sign
 
@@ -38,3 +39,6 @@ operator fun Point<Int>.times(other: Point<Int>): Point<Int> =
 
 fun Point<Int>.toList(): List<Int> =
     listOf(x, y)
+
+infix fun Point<Int>.nonNegativeModulo(other: Point<Int>): Point<Int> =
+    Point((x nonNegativeModulo other.x) to (y nonNegativeModulo other.y))
