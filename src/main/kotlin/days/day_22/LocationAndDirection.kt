@@ -2,6 +2,7 @@ package days.day_22
 
 import util.point.Point
 import util.point.plus
+import util.point.times
 
 data class LocationAndDirection(val side: Side, val location: Point<Int>, val direction: Direction) {
 
@@ -15,6 +16,6 @@ data class LocationAndDirection(val side: Side, val location: Point<Int>, val di
         copy(direction = direction.rotate(clockwiseRotationDegrees))
 
     val universalLocation
-        get() = Point(location.x + side.location.x * side.size to location.y + side.location.y * side.size)
+        get() = side.location * side.size + location
 
 }

@@ -37,6 +37,9 @@ fun Point<Int>.toDoublePoint(): Point<Double> =
 operator fun Point<Int>.times(other: Point<Int>): Point<Int> =
     Point(x * other.x to y * other.y)
 
+operator fun Point<Int>.times(other: Int): Point<Int> =
+    this * Point(other to other)
+
 fun Point<Int>.toList(): List<Int> =
     listOf(x, y)
 
