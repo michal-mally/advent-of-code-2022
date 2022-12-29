@@ -9,7 +9,7 @@ class Day08_2 : Solver<Sequence<String>, Int> {
 
         return forest
             .allPositions()
-            .filter { it.x in (1..<forest.rowCount - 1) && it.y in (1..<forest.columnCount - 1) }
+            .filter { it.x in (1..<forest.yCount - 1) && it.y in (1..<forest.xCount - 1) }
             .maxOf { forest.scenicViewOf(it) }
     }
 
@@ -36,9 +36,9 @@ class Day08_2 : Solver<Sequence<String>, Int> {
     private fun Forest.allDirections(position: Point<Int>) =
         sequenceOf(
             (position.y - 1 downTo 0).asSequence().map { Point(position.x to it) },
-            (position.y + 1..<columnCount).asSequence().map { Point(position.x to it) },
+            (position.y + 1..<xCount).asSequence().map { Point(position.x to it) },
             (position.x - 1 downTo 0).asSequence().map { Point(it to position.y) },
-            (position.x + 1..<rowCount).asSequence().map { Point(it to position.y) },
+            (position.x + 1..<yCount).asSequence().map { Point(it to position.y) },
         )
 
 }
