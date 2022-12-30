@@ -4,13 +4,16 @@ import util.sequence.headAndTail
 
 fun xRegisterValues(input: Sequence<String>) =
     buildList {
-        fun parseCommand(command: String) = command.splitToSequence(" ").headAndTail()
+        fun parseCommand(command: String) =
+            command
+                .splitToSequence(" ")
+                .headAndTail()
 
-        add(1)
+        this += 1
         for ((cmd, args) in input.map(::parseCommand)) {
-            add(0)
+            this += 0
             if (cmd == "addx") {
-                add(args.first().toInt())
+                this += args.first().toInt()
             }
         }
     }
