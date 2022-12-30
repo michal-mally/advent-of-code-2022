@@ -1,6 +1,7 @@
 package days.day_12
 
 import util.array.TwoDimArray
+import util.array.neighbourPositions
 import util.graph.Edge
 import util.graph.Graph
 import util.point.Point
@@ -15,10 +16,10 @@ fun graph(heightMap: TwoDimArray<Char>) =
     Graph(heightMap.edges())
 
 fun TwoDimArray<Char>.start() =
-    allPositions().first { this[it] == 'S' }
+    allPositions().single { this[it] == 'S' }
 
 fun TwoDimArray<Char>.end() =
-    allPositions().first { this[it] == 'E' }
+    allPositions().single { this[it] == 'E' }
 
 fun TwoDimArray<Char>.height(position: Point<Int>) =
     when (this[position]) {
@@ -34,13 +35,3 @@ private fun TwoDimArray<Char>.edges() =
         .map { Edge(it) }
         .filter { edge -> height(edge.from) - height(edge.to) <= 1 }
         .toSet()
-
-private fun TwoDimArray<*>.neighbourPositions(position: Point<Int>) =
-    sequenceOf(
-        position.x - 1 to position.y,
-        position.x + 1 to position.y,
-        position.x to position.y - 1,
-        position.x to position.y + 1,
-    )
-        .map { Point(it) }
-        .filter { it.x in xIndices && it.y in yIndices }

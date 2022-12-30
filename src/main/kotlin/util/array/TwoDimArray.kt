@@ -1,6 +1,7 @@
 package util.array
 
 import util.point.Point
+import util.point.neighbours
 
 data class TwoDimArray<T>(private val values: List<List<T>>) {
     init {
@@ -25,3 +26,8 @@ data class TwoDimArray<T>(private val values: List<List<T>>) {
         point.x in xIndices && point.y in yIndices
 
 }
+
+fun TwoDimArray<*>.neighbourPositions(position: Point<Int>) =
+    position
+        .neighbours()
+        .filter { it.x in xIndices && it.y in yIndices }
