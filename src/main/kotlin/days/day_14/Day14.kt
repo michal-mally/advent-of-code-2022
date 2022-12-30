@@ -33,8 +33,8 @@ private tailrec fun dropGrainOfSand(
         return null
     }
 
-    val nextDropPoint = sequenceOf(0 to 1, -1 to 1, 1 to 1)
-        .map { Point(it) }
+    val nextDropPoint = sequenceOf(0, -1, 1)
+        .map { Point(it to 1) }
         .map { dropPoint + it }
         .filter { fallThrough || it.y < lowestElevation }
         .filterNot { it in spotsTaken }

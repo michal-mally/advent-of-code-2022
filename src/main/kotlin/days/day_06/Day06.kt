@@ -1,15 +1,16 @@
 package days.day_06
 
+import util.number.count
+
 fun solve(input: Sequence<Char>, length: Int): Int {
     val buffer = ArrayDeque<Char>()
-    var position = 0
 
     val iterator = input.iterator()
-    while (buffer.toSet().size < length) {
-        position++
-        buffer += iterator.next()
-        if (buffer.size > length) buffer.removeFirst()
+    return count {
+        while (buffer.toSet().size < length) {
+            inc()
+            buffer += iterator.next()
+            if (buffer.size > length) buffer.removeFirst()
+        }
     }
-
-    return position
 }
