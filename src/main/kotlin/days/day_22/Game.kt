@@ -3,7 +3,11 @@ package days.day_22
 import days.day_22.Instruction.Forward
 import days.day_22.Instruction.Rotate
 import days.day_22.Square.Wall
-import util.point.*
+import util.point.Point
+import util.point.nonNegativeModulo
+import util.point.rotate
+import util.point.toDoublePoint
+import util.point.toIntPoint
 
 class Game(sides: List<Side>) {
 

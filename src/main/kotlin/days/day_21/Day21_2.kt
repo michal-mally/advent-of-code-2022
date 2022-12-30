@@ -20,21 +20,19 @@ class Day21_2 : Solver<Sequence<String>, Long> {
         try {
             knownValues[rootOperation.left] = monkeys.evaluate(rootOperation.left)
             knownValues[rootOperation.right] = knownValues[rootOperation.left]!!
-        } catch (e: Exception) {
-            null
+        } catch (_: Exception) {
         }
 
         try {
             knownValues[rootOperation.right] = monkeys.evaluate(rootOperation.right)
             knownValues[rootOperation.left] = knownValues[rootOperation.right]!!
-        } catch (e: Exception) {
-            null
+        } catch (_: Exception) {
         }
 
         for (monkey in listOfMonkeys.filter { it.name !in knownValues.keys }) {
             val value = try {
                 monkeys.evaluate(monkey.name)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
             if (value != null) {

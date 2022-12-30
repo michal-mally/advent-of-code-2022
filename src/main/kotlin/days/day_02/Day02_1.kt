@@ -1,7 +1,11 @@
 package days.day_02
 
 import util.Solver
-import util.pair.*
+import util.pair.map
+import util.pair.mapFirstAndSecond
+import util.pair.mapLeft
+import util.pair.toPair
+import util.pair.toSequence
 
 class Day02_1 : Solver<Sequence<String>, Int> {
 

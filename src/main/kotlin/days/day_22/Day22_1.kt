@@ -1,6 +1,8 @@
 package days.day_22
 
-import days.day_22.Day22_1.Instruction.*
+import days.day_22.Day22_1.Instruction.Forward
+import days.day_22.Day22_1.Instruction.Left
+import days.day_22.Day22_1.Instruction.Right
 import days.day_22.Day22_1.Square.Empty
 import days.day_22.Day22_1.Square.Wall
 import util.Solver
@@ -36,7 +38,6 @@ class Day22_1 : Solver<Sequence<String>, Int> {
                 .onEach { println(it) }
                 .toList()
 
-        var index = 0
         for (instruction in instructions) {
             check(squares.getValue(position) == Empty)
             print("${direction} ${position} ")

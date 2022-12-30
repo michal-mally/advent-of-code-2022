@@ -1,6 +1,12 @@
 package days.day_23
 
-import util.point.*
+import util.point.Point
+import util.point.adjacents
+import util.point.east
+import util.point.north
+import util.point.plus
+import util.point.south
+import util.point.west
 import kotlin.math.abs
 
 fun elves(input: Sequence<String>): MutableSet<Point<Int>> {

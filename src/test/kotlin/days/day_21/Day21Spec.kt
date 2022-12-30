@@ -7,7 +7,7 @@ import util.file.lines
 class Day21Spec : FreeSpec({
 
     "Part 1" {
-        Day21_1().solve(lines(21)) shouldBe 152
+        Day21_1().solve(lines(21)) shouldBe 56490240862410L
     }
 
     "Part 2" {
