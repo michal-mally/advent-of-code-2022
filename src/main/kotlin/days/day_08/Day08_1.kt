@@ -2,18 +2,17 @@ package days.day_08
 
 import util.Solver
 import util.point.Point
+import util.sequence.reversed
 
 class Day08_1 : Solver<Sequence<String>, Int> {
-    override fun solve(input: Sequence<String>): Int {
-        val forest = forest(input)
-
-        return forest
-            .allDirections()
-            .fold(emptySet<Point<Int>>()) { visibleTrees, direction ->
-                visibleTrees + forest.visibleTreesInDirection(direction)
-            }
-            .size
-    }
+    override fun solve(input: Sequence<String>) =
+        with(forest(input)) {
+            allDirections()
+                .fold(emptySet<Point<Int>>()) { visibleTrees, direction ->
+                    visibleTrees + visibleTreesInDirection(direction)
+                }
+                .size
+        }
 
     private fun Forest.visibleTreesInDirection(direction: Direction) =
         buildSet {
@@ -22,18 +21,18 @@ class Day08_1 : Solver<Sequence<String>, Int> {
                 val tree = this@Forest[position]
                 if (tree > tallestTree) {
                     tallestTree = tree
-                    add(position)
+                    this += position
                 }
             }
         }
 
     private fun Forest.allDirections(): Sequence<Direction> =
         sequenceOf(
-            xIndices.map { row -> yIndices.map { Point(row to it) } },
-            yIndices.map { column -> xIndices.map { Point(it to column) } }
+            xIndices.map { x -> yIndices.map { Point(x to it) } },
+            yIndices.map { y -> xIndices.map { Point(it to y) } }
         )
-            .reduce { acc, sequence -> acc + sequence }
-            .flatMap { sequenceOf(it, it.toList().reversed().asSequence()) }
-            .map { Direction(it) }
+            .flatMap { it }
+            .flatMap { sequenceOf(it, it.reversed()) }
+            .map(::Direction)
 
 }

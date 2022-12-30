@@ -11,6 +11,9 @@ value class Direction(val points: Sequence<Point<Int>>)
 fun forest(input: Sequence<String>) =
     input
         .map { it.toList() }
-        .map { it.map { c -> c.toString().toInt() } }
+        .map { it.toListOfInts() }
         .toList()
         .let(::Forest)
+
+private fun List<Char>.toListOfInts() =
+    map { it.toString().toInt() }

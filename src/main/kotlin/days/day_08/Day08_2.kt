@@ -4,14 +4,12 @@ import util.Solver
 import util.point.Point
 
 class Day08_2 : Solver<Sequence<String>, Int> {
-    override fun solve(input: Sequence<String>): Int {
-        val forest = forest(input)
-
-        return forest
-            .allPositions()
-            .filter { it.x in (1..<forest.yCount - 1) && it.y in (1..<forest.xCount - 1) }
-            .maxOf { forest.scenicViewOf(it) }
-    }
+    override fun solve(input: Sequence<String>) =
+        with(forest(input)) {
+            allPositions()
+                .filter { it.x in (1..<yCount - 1) && it.y in (1..<xCount - 1) }
+                .maxOf { scenicViewOf(it) }
+        }
 
     private fun Forest.scenicViewOf(position: Point<Int>): Int {
         val treeHeight = this@Forest[position]
@@ -25,6 +23,7 @@ class Day08_2 : Solver<Sequence<String>, Int> {
         var visibleTrees = 0
         for (otherTreeHeight in otherTreeHeights) {
             visibleTrees++
+
             if (otherTreeHeight >= treeHeight) {
                 break
             }

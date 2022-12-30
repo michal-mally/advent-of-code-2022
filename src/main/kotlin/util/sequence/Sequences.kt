@@ -48,3 +48,8 @@ fun <T> Sequence<T>.toPair(): Pair<T, T> =
 
 fun <T> Sequence<T>.headAndTail(): Pair<T, Sequence<T>> =
     first() to drop(1)
+
+fun <T> Sequence<T>.reversed(): Sequence<T> =
+    toList()
+        .reversed()
+        .asSequence()
