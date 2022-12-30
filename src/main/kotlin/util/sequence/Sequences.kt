@@ -53,3 +53,8 @@ fun <T> Sequence<T>.reversed(): Sequence<T> =
     toList()
         .reversed()
         .asSequence()
+
+fun <T> Sequence<T>.filterIndexes(predicate: (T) -> Boolean): Sequence<Int> =
+    mapIndexed { index, v -> index to predicate(v) }
+        .filter { (_, matching) -> matching }
+        .map { (index, _) -> index }
