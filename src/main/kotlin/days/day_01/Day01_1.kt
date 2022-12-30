@@ -9,7 +9,6 @@ class Day01_1 : Solver<Sequence<String>, Int> {
         input
             .map { it.toIntOrNull() }
             .splitByNull()
-            .map { it.sum() }
-            .max()
+            .maxOf { it.sum() }
 
 }
