@@ -1,33 +1,31 @@
 package days.day_09
 
+import util.direction.Direction
 import util.pair.toPair
 import util.point.Point
+import util.point.ZERO
 import util.point.minus
 import util.point.plus
 import util.point.sign
 import kotlin.math.abs
 
-fun Point(direction: String) = Point(
-    when (direction) {
-        "U" -> 0 to -1
-        "R" -> 1 to 0
-        "D" -> 0 to 1
-        "L" -> -1 to 0
-        else -> throw IllegalArgumentException("Unknown direction: $direction")
-    }
-)
+fun Direction(direction: Char) =
+    Direction
+        .values()
+        .firstOrNull { it.name.first() == direction }
+        ?: error("Invalid direction: $direction")
 
 fun moves(input: Sequence<String>) =
     input
         .map { it.split(" ") }
         .map { it.toPair() }
-        .flatMap { (direction, distance) -> List(distance.toInt()) { Point(direction) } }
+        .flatMap { (direction, distance) -> List(distance.toInt()) { Direction(direction.single()) } }
 
-fun performMoves(knotCount: Int, moves: Sequence<Point<Int>>): Int {
-    val knotPositions = MutableList(knotCount) { Point(0 to 0) }
-    val visited = mutableSetOf(Point(0 to 0))
+fun performMoves(knotCount: Int, moves: Sequence<Direction>): Int {
+    val knotPositions = MutableList(knotCount) { ZERO }
+    val visited = mutableSetOf(ZERO)
     for (move in moves) {
-        knotPositions[0] += move
+        knotPositions[0] += move.point
         updateTailKnotPositions(knotPositions)
 
         visited += knotPositions.last()

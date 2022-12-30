@@ -1,5 +1,6 @@
 package days.day_22
 
+import util.direction.Direction
 import util.point.Point
 import util.point.plus
 

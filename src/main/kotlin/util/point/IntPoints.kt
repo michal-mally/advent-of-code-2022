@@ -45,3 +45,5 @@ fun Point<Int>.toList(): List<Int> =
 
 infix fun Point<Int>.nonNegativeModulo(other: Point<Int>): Point<Int> =
     Point((x nonNegativeModulo other.x) to (y nonNegativeModulo other.y))
+
+val ZERO = Point(0 to 0)

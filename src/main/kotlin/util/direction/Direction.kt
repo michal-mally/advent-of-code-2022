@@ -1,5 +1,6 @@
-package days.day_22
+package util.direction
 
+import days.day_22.STRAIGHT_ANGLE_DEGREES
 import util.number.nonNegativeModulo
 import util.point.Point
 

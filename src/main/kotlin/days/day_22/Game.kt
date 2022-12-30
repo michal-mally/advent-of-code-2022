@@ -3,7 +3,9 @@ package days.day_22
 import days.day_22.Instruction.Forward
 import days.day_22.Instruction.Rotate
 import days.day_22.Square.Wall
+import util.direction.Direction.Right
 import util.point.Point
+import util.point.ZERO
 import util.point.nonNegativeModulo
 import util.point.rotate
 import util.point.toDoublePoint
@@ -57,7 +59,7 @@ class Game(sides: List<Side>) {
             .values
             .filter { it.location.y == 0 }
             .minBy { it.location.x }
-            .let { LocationAndDirection(it, Point(0 to 0), Direction.Right) }
+            .let { LocationAndDirection(it, ZERO, Right) }
 
     private fun Point<Int>.rotate(clockwiseRotationDegrees: Int): Point<Int> {
         fun Point<Int>.invertY() = Point(x to -y + sideSize - 1)

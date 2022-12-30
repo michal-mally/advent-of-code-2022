@@ -1,6 +1,7 @@
 package days.day_23
 
 import util.point.Point
+import util.point.ZERO
 import util.point.adjacents
 import util.point.east
 import util.point.north
@@ -27,7 +28,7 @@ fun directions() =
         fun direction(p: Point<Int>): Set<Point<Int>> {
             require(p.x == 0 || p.y == 0)
             require(abs(p.x) == 1 || abs(p.y) == 1)
-            return Point(0 to 0)
+            return ZERO
                 .adjacents()
                 .filter { p.x == 0 || it.x == p.x }
                 .filter { p.y == 0 || it.y == p.y }
