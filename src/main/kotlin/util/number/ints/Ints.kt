@@ -1,4 +1,4 @@
-package util.number
+package util.number.ints
 
 fun Int.isEven() =
     this % 2 == 0
@@ -12,9 +12,6 @@ class IntHolder(var value: Int = 0) {
         return this
     }
 }
-
-infix fun Long.nonNegativeModulo(operand: Int): Int =
-    ((this % operand + operand) % operand).toInt()
 
 infix fun Int.nonNegativeModulo(operand: Int): Int =
     (this % operand + operand) % operand

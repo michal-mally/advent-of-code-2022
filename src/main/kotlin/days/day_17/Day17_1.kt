@@ -2,7 +2,7 @@ package days.day_17
 
 import util.Solver
 import util.point.Point
-import util.point.plus
+import util.point.ints.plus
 
 data class Rock(val segments: Set<Point<Int>>) {
 

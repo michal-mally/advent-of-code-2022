@@ -1,7 +1,7 @@
 package days.day_03
 
 import util.Solver
-import util.number.isEven
+import util.number.ints.isEven
 
 class Day03_1 : Solver<Sequence<String>, Int> {
 

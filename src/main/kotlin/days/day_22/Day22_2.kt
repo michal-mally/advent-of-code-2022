@@ -2,9 +2,9 @@ package days.day_22
 
 import util.Solver
 import util.point.Point
-import util.point.plus
-import util.point.times
-import util.point.toList
+import util.point.ints.plus
+import util.point.ints.times
+import util.point.ints.toList
 import util.sequence.splitBy
 
 private const val SIDE_SIZE = 50

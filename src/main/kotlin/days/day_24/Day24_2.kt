@@ -1,10 +1,10 @@
 package days.day_24
 
 import util.Solver
-import util.number.nonNegativeModulo
+import util.number.ints.nonNegativeModulo
 import util.point.Point
-import util.point.manhattanDistanceTo
-import util.point.plus
+import util.point.ints.manhattanDistanceTo
+import util.point.ints.plus
 import kotlin.math.min
 
 class Day24_2 : Solver<Sequence<String>, Int> {

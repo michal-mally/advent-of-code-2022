@@ -1,6 +1,9 @@
 package days.day_22
 
+import days.day_22.Instruction.Forward
+import days.day_22.Instruction.Rotate
 import util.array.TwoDimArray
+import util.direction.STRAIGHT_ANGLE_DEGREES
 import util.point.Point
 import util.sequence.transpose
 
@@ -48,7 +51,7 @@ private fun Square(square: Char) =
 
 private fun Instruction(instruction: String) =
     when (instruction) {
-        "L" -> Instruction.Rotate(-STRAIGHT_ANGLE_DEGREES)
-        "R" -> Instruction.Rotate(STRAIGHT_ANGLE_DEGREES)
-        else -> Instruction.Forward(instruction.toInt())
+        "L" -> Rotate(-STRAIGHT_ANGLE_DEGREES)
+        "R" -> Rotate(STRAIGHT_ANGLE_DEGREES)
+        else -> Forward(instruction.toInt())
     }

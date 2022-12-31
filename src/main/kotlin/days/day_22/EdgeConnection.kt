@@ -1,10 +1,9 @@
 package days.day_22
 
 import util.direction.Direction
+import util.direction.STRAIGHT_ANGLE_DEGREES
 import util.point.Point
-import util.point.plus
-
-const val STRAIGHT_ANGLE_DEGREES = 90
+import util.point.ints.plus
 
 data class EdgeConnection(val side: Point<Int>, val clockwiseRotationDegrees: Int = 0) {
     init {

@@ -1,6 +1,6 @@
 package days.day_06
 
-import util.number.count
+import util.number.ints.count
 
 fun solve(input: Sequence<Char>, length: Int): Int {
     val buffer = ArrayDeque<Char>()

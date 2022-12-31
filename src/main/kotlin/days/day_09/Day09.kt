@@ -3,10 +3,10 @@ package days.day_09
 import util.direction.Direction
 import util.pair.toPair
 import util.point.Point
-import util.point.ZERO
-import util.point.minus
-import util.point.plus
-import util.point.sign
+import util.point.ints.ZERO
+import util.point.ints.minus
+import util.point.ints.plus
+import util.point.ints.sign
 import kotlin.math.abs
 
 fun Direction(direction: Char) =

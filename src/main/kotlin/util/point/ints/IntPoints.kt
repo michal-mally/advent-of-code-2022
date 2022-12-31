@@ -1,6 +1,7 @@
-package util.point
+package util.point.ints
 
-import util.number.nonNegativeModulo
+import util.number.ints.nonNegativeModulo
+import util.point.Point
 import kotlin.math.abs
 import kotlin.math.sign
 

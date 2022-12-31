@@ -1,8 +1,9 @@
 package util.direction
 
-import days.day_22.STRAIGHT_ANGLE_DEGREES
-import util.number.nonNegativeModulo
+import util.number.ints.nonNegativeModulo
 import util.point.Point
+
+const val STRAIGHT_ANGLE_DEGREES = 90
 
 enum class Direction(val point: Point<Int>) {
     Right(Point(1 to 0)),

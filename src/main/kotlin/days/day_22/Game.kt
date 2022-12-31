@@ -5,11 +5,11 @@ import days.day_22.Instruction.Rotate
 import days.day_22.Square.Wall
 import util.direction.Direction.Right
 import util.point.Point
-import util.point.ZERO
-import util.point.nonNegativeModulo
-import util.point.rotate
-import util.point.toDoublePoint
-import util.point.toIntPoint
+import util.point.doubles.rotate
+import util.point.doubles.toIntPoint
+import util.point.ints.ZERO
+import util.point.ints.nonNegativeModulo
+import util.point.ints.toDoublePoint
 
 class Game(sides: List<Side>) {
 

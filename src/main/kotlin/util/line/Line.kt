@@ -1,9 +1,9 @@
 package util.line
 
 import util.point.Point
-import util.point.minus
-import util.point.plus
-import util.point.sign
+import util.point.ints.minus
+import util.point.ints.plus
+import util.point.ints.sign
 
 data class Line<T>(val from: Point<T>, val to: Point<T>)
 

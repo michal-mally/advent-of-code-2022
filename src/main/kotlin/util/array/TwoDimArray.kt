@@ -1,7 +1,7 @@
 package util.array
 
 import util.point.Point
-import util.point.neighbours
+import util.point.ints.neighbours
 
 data class TwoDimArray<T>(private val values: List<List<T>>) {
     init {

@@ -2,8 +2,8 @@ package days.day_22
 
 import util.direction.Direction
 import util.point.Point
-import util.point.plus
-import util.point.times
+import util.point.ints.plus
+import util.point.ints.times
 
 data class LocationAndDirection(val side: Side, val location: Point<Int>, val direction: Direction) {
 

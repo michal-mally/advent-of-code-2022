@@ -5,8 +5,9 @@ import util.line.allPoints
 import util.line.rangeTo
 import util.pair.toPair
 import util.point.Point
-import util.point.plus
-import util.number.count as intCount
+import util.point.ints.plus
+import kotlin.collections.plusAssign
+import util.number.ints.count as intCount
 
 fun spotsTaken(input: Sequence<String>) =
     input

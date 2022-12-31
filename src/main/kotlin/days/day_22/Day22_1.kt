@@ -6,7 +6,7 @@ import days.day_22.Day22_1.Instruction.Right
 import days.day_22.Day22_1.Square.Empty
 import days.day_22.Day22_1.Square.Wall
 import util.Solver
-import util.number.nonNegativeModulo
+import util.number.ints.nonNegativeModulo
 import util.point.Point
 import util.sequence.splitBy
 

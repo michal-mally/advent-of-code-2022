@@ -1,5 +1,6 @@
-package util.point
+package util.point.doubles
 
+import util.point.Point
 import java.lang.Math.toRadians
 import kotlin.math.cos
 import kotlin.math.roundToInt

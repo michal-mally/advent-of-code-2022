@@ -1,6 +1,6 @@
 package days.day_20
 
-import util.number.nonNegativeModulo
+import util.number.longs.nonNegativeModulo
 import java.util.*
 
 fun solve(input: Sequence<Long>, numberOfMixes: Int = 1): Long {
